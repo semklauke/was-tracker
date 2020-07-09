@@ -4,10 +4,9 @@
         <span class="navbar-brand mb-0 h1 " id="wastrackerbrand">WaS-Tracker</span>
     </nav>
 
-    <div class="fixed-bottom bg-primary text-white" id="station_info">
-        <div id="station_info_name">Station 3</div>
-        
-        <div id="station_info_dismiss_span">
+    <div class="fixed-bottom bg-primary text-white" v-show="$root.station_name != 'null' && $root.station_name != null" id="station_info">
+        <div id="station_info_name">{{ $root.station_name }}</div>
+        <div id="station_info_dismiss_span" @click="clearStation">
             &#215;
         </div> 
         <span class="clearfix"></span>
@@ -98,10 +97,33 @@ export default {
             activetab: ''
         };
     },
+    mounted() {
+        this.fetchLocalStore();
+    },
+    updated() {
+        this.fetchLocalStore();
+    },
+    methods: {
+        fetchLocalStore() {
+            this.$root.station_name = this.$localStorage.get('station_name', null);
+            this.$root.station_id = this.$localStorage.get('station_id', null);
+        },
+        clearStation() {
+            this.$root.station_name = null;
+            this.$root.station_id = null;
+        }
+    },
     watch: {
         activetab: function(val) {
             this.$router.push({ name: val });
+        },
+        '$root.station_name': function(val) {
+            this.$localStorage.set('station_name', val);
+        },
+        '$root.station_id': function(val) {
+            this.$localStorage.set('station_id', val);
         }
+
     }
 };
 

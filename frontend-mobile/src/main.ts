@@ -30,6 +30,10 @@ Vue.use(VueLocalStorage);
 
 // create vue app
 let vm = new Vue({
+    data: {
+        station_name: null,
+        station_id: null
+    },
     router,
     render: h => h(App),
     localStorage: {
