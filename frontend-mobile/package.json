@@ -9,10 +9,13 @@
   "dependencies": {
     "@types/cookie": "^0.4.0",
     "axios": "^0.19.2",
+    "bootstrap": "^4.5.0",
     "cookie": "^0.4.1",
     "core-js": "^3.6.5",
+    "jsqr": "github:cozmo/jsQR",
     "mint-ui": "^2.2.13",
     "vue": "^2.6.11",
+    "vue-localstorage": "^0.6.2",
     "vue-router": "^3.2.0"
   },
   "devDependencies": {
