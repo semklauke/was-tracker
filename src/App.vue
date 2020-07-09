@@ -1,32 +1,57 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+<div id="app">
+    <mt-tabbar v-model="activetab">
+        <mt-tab-item id="tab-scan">
+            <img slot="icon" class="tabbaricon" src="assets/scan.svg">
+            SuS
+        </mt-tab-item>
+        <mt-tab-item id="tab-info">
+            <img slot="icon" class="tabbaricon" src="assets/info.svg">
+            Info
+        </mt-tab-item>
+        <mt-tab-item id="tab-history">
+            <img slot="icon" class="tabbaricon" src="assets/history.svg">
+            History
+        </mt-tab-item>
+        <mt-tab-item id="tab-lostqr">
+            <img slot="icon" class="tabbaricon" src="assets/lostqr.svg">
+            Kein QR
+        </mt-tab-item>
+        <mt-tab-item id="tab-help">
+            <img slot="icon" class="tabbaricon" src="assets/help.svg">
+            Help
+        </mt-tab-item>
+    </mt-tabbar>
+    <transition
+        enter-active-class="animated fadeIn faster"
+        leave-active-class="animated fadeOut faster"
+        mode="out-in"
+    >
+        <router-view></router-view>
+    </transition>
+</div>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.tabbaricon {
+    width: 100%;
+    height: 100%;
 }
 </style>
+
+<script>
+export default {
+    data: function () {
+        return { 
+            activetab: ''
+        };
+    },
+    watch: {
+        activetab: function(val) {
+            this.$router.push({ name: val });
+        }
+    }
+};
+
+</script>
+
