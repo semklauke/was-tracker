@@ -1,7 +1,10 @@
 <template>
 <div id="app">
-    <nav class="navbar navbar-light bg-light border-bottom">
-        <span class="navbar-brand mb-0 h1 " id="wastrackerbrand">WaS-Tracker</span>
+    <nav class="navbar navbar-light bg-light border-bottom" id="navbar">
+        <span class="navbar-brand mb-0 h1" id="wastrackerbrand">WaS-Tracker</span>
+        <form class="form-inline" v-show="$root.station_name == 'null' || $root.station_name == null">
+            <button class="btn btn-primary btn-sm" type="submit" @click="goToLogin">Login</button>
+        </form>
     </nav>
 
     <div class="fixed-bottom bg-primary text-white" v-show="$root.station_name != 'null' && $root.station_name != null" id="station_info">
@@ -11,6 +14,16 @@
         </div> 
         <span class="clearfix"></span>
     </div>
+
+    <transition
+        enter-active-class="animated fadeIn faster"
+        leave-active-class="animated fadeOut faster"
+        mode="out-in"
+    >
+        <router-view></router-view>
+    </transition>
+
+
     <mt-tabbar v-model="activetab">
         <mt-tab-item id="tab-scan">
             <img slot="icon" class="tabbaricon" src="assets/scan.svg" />
@@ -33,13 +46,6 @@
             Help
         </mt-tab-item>
     </mt-tabbar>
-    <transition
-        enter-active-class="animated fadeIn faster"
-        leave-active-class="animated fadeOut faster"
-        mode="out-in"
-    >
-        <router-view></router-view>
-    </transition>
 </div>
 </template>
 
@@ -62,8 +68,8 @@
     border-radius: 0px 0px 10px 10px;
 }
 #wastrackerbrand {
-    width: 100%;
-    text-align: center;
+    /*width: 100%;
+    text-align: center;*/
     font-size: 1.4em;
 }
 #station_info_name {
@@ -88,6 +94,9 @@
 .filler {
     width: 100%;
 }
+#navbar {
+    margin-bottom: 50px;
+}
 </style>
 
 <script>
@@ -99,6 +108,7 @@ export default {
     },
     mounted() {
         this.fetchLocalStore();
+        this.fetchRoute();
     },
     updated() {
         this.fetchLocalStore();
@@ -108,14 +118,25 @@ export default {
             this.$root.station_name = this.$localStorage.get('station_name', null);
             this.$root.station_id = this.$localStorage.get('station_id', null);
         },
+        fetchRoute() {
+            this.activetab = "tab-" + this.$route.path.substring(1)
+        },
         clearStation() {
             this.$root.station_name = null;
-            this.$root.station_id = null;
+            this.$root.station_id = null;        
+        },
+        goToLogin() {
+            if (this.$route.path != "/") {
+                this.$router.push({ name: 'login' });
+            }
         }
     },
     watch: {
         activetab: function(val) {
-            this.$router.push({ name: val });
+            if (val != "tab-" + this.$route.path.substring(1)) {
+                console.log("push " + val);
+                this.$router.push({ name: val });
+            }
         },
         '$root.station_name': function(val) {
             this.$localStorage.set('station_name', val);
