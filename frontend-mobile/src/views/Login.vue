@@ -20,6 +20,7 @@
 export default {
     data: function () {
         return {
+            animate: false
         };
     },
     _canvas: null,
@@ -63,9 +64,10 @@ export default {
 
                 }
             }
-            requestAnimationFrame(tick);            
+            if (this.animate) requestAnimationFrame(tick);            
         }
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(stream => {
+            this.animate = true;
             this.$options._stream = stream;
             video.srcObject = stream;
             video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
@@ -79,6 +81,7 @@ export default {
             this.$options._stream.getTracks().forEach(track => { track.stop(); });
             this.$options._stream = null;
         }
+        this.animate = false;
         next();
     },
     methods: {

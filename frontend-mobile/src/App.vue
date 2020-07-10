@@ -134,7 +134,6 @@ export default {
     watch: {
         activetab: function(val) {
             if (val != "tab-" + this.$route.path.substring(1)) {
-                console.log("push " + val);
                 this.$router.push({ name: val });
             }
         },
