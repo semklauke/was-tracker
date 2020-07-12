@@ -24,6 +24,7 @@ export let secure: RequestHandler = function(req, res, next)  {
                 logger.warn("Unauthorized request from %s", scanner_uuid);
                 res.status(401).json({ error: "Not logged in", errorid: 3 });
             } else {
+                res.locals.scanner_id = result.rec_id;
                 logger.debug("Authorized %s", result.uuid);
                 next();
             }

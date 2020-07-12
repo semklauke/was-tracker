@@ -8,7 +8,7 @@ export default {
     "log_folder" : "log",
 
     // is the appliaction in debbuging mode (true/false)
-    "debug" : true,
+    "debug" : false,
 
     // port the backend server is running on
     "port" : 443,
@@ -24,14 +24,14 @@ export default {
 
     // the ip the service is accessed by
     "ip": {
-        "ipv4": "127.0.0.1",
-        "ipv6": "0000:0000:0000:0000:0000:0000:0000:0001",
+        "ipv4": "0.0.0.0",
+        "ipv6": "0000:0000:0000:0000:0000:0000:0000:0000",
     },
 
     // password for the front end side. pls change this
     "password" : "abcd",
 
     // build outputr folder for the vue frontend, relative to the project root
-    "frontend_folder" : "dist"
+    "frontend_folder" : "../frontend-mobile/dist"
 };
     

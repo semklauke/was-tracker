@@ -27,13 +27,13 @@ export const router: express.Router = express.Router();
 
 /*router.post('/', bodyParser.json(), function(req, res) {
 
-    logger.debug("POST api.tracker.station /",);
+    logger.debug("POST api.tracker.station /");
 
 });*/
 
-router.get('/', secure,  function(req, res) {
+router.get('/', secure, function(req, res) {
 
-    logger.debug("GET api.tracker.station /",);
+    logger.debug("GET api.tracker.station /");
     let stations: any[] = DB().query(sql_station_all);
     res.status(200).json({ success: "Success", stations, length: stations.length });
 
@@ -42,7 +42,7 @@ router.get('/', secure,  function(req, res) {
 router.get('/:station_uuid', secure, function(req, res) {
 
     let station_uuid: string = req.params.station_uuid;
-    logger.debug("GET api.tracker.station /:station_uuid");
+    logger.debug("GET api.tracker.station /%s", station_uuid);
 
     // check if station uuid exists
     let station: Station | undefined = DB().queryFirstRow(sql_station, station_uuid);
