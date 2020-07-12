@@ -1,0 +1,45 @@
+-- Up
+
+CREATE TABLE stations (
+    rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name VARCHAR NOT NULL,
+    uuid VARCHAR NOT NULL,
+    prev_station INTEGER NULL DEFAULT NULL,
+    distance_m INTEGER NULL DEFAULT NULL,
+    position VARCHAR NULL DEFAULT NULL,
+    FOREIGN KEY (prev_station) REFERENCES stations(rec_id),
+    UNIQUE (uuid)
+);
+
+CREATE TABLE codes (
+    rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    qr VARCHAR NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    CHECK (active IN (0,1))
+);
+
+CREATE TABLE scanner (
+    rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    uuid VARCHAR NOT NULL,
+    name VARCHAR NULL DEFAULT NULL,
+    UNIQUE (uuid)
+);
+
+CREATE TABLE checkins (
+    rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    code_id INTEGER NOT NULL,
+    station_id INTEGER NOT NULL,
+    scanner_id INTEGER NOT NULL,
+    stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (code_id) REFERENCES codes(rec_id),
+    FOREIGN KEY (station_id) REFERENCES stations(rec_id),
+    FOREIGN KEY (scanner_id) REFERENCES scanner(rec_id)
+);
+
+-- Down
+
+DROP TABLE IF EXISTS stations;
+DROP TABLE IF EXISTS codes;
+DROP TABLE IF EXISTS scanner;
+DROP TABLE IF EXISTS checkins;
