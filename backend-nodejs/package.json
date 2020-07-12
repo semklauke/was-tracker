@@ -1,0 +1,44 @@
+{
+  "name": "backend-nodejs",
+  "version": "0.1.0",
+  "description": "Backend for was-tracker",
+  "main": "backend.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "tsc": "tsc -b",
+    "clean": "node scripts/clean.js",
+    "start": "node backend.js",
+    "prestart": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semklauke/was-tracker.git"
+  },
+  "author": "Sem Klauke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/semklauke/was-tracker/issues"
+  },
+  "homepage": "https://github.com/semklauke/was-tracker#readme",
+  "dependencies": {
+    "@types/better-sqlite3": "^5.4.0",
+    "@types/body-parser": "^1.19.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.7",
+    "@types/express-session": "^1.17.0",
+    "@types/node": "^14.0.22",
+    "@types/uuid": "^8.0.0",
+    "better-sqlite3": "^7.1.0",
+    "better-sqlite3-helper": "^3.1.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "typescript": "^3.9.6",
+    "uuid": "^8.2.0",
+    "winston": "^3.3.3",
+    "winston-timestamp-colorize": "^1.0.4"
+  }
+}
