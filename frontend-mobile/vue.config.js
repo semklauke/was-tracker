@@ -9,7 +9,7 @@ module.exports = {
         }
     },
     
-    outputDir: '../dist',
+    outputDir: 'dist',
     assetsDir: 'assets',
     indexPath: 'index.html',
     filenameHashing: true,

@@ -12,6 +12,13 @@
                 </div>
             </div>
         </div>
+        <div class="row scan-info" v-if="request_info">
+            <div class="col">
+                <div class="alert" :class="infoClasses" role="alert">
+                    {{ request_info_text }}
+                </div>
+            </div>
+        </div>
 </div>
 </template>
 
@@ -19,7 +26,14 @@
 export default {
     data: function () {
         return {
-            animate: false
+            animate: false,
+            request_info: false,
+            request_info_classes: {
+                'alert-success': false,
+                'alert-danger': false,
+                'alert-warning': false
+            },
+            request_info_text: ''
         };
     },
     _canvas: null, 
