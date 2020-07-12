@@ -86,8 +86,8 @@ app.use('/api/scanner', api_scanner);
 import { router as api_station } from './includes/api/station';
 app.use('/api/station', api_station);
 
-/*import { router as api_checkin } from './includes/api/checkin';
-app.use('/api/checkin', api_checkin);*/
+import { router as api_checkin } from './includes/api/checkin';
+app.use('/api/checkin', api_checkin);
 
 // serve vue frontend
 app.get('*', function(req, res){
