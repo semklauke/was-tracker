@@ -91,7 +91,7 @@ app.use('/api/checkin', api_checkin);
 
 // serve vue frontend
 app.get('*', function(req, res){
-    res.sendFile(path.resolve(__dirname, config.frontend_folder, 'tracker.html'));
+    res.sendFile(path.resolve(__dirname, config.frontend_folder, 'index.html'));
 });
 
 

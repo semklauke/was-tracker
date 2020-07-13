@@ -40,7 +40,7 @@ export default {
         let canvas = document.getElementById("login-scan-canvas").getContext("2d");
         this.$options._canvas = canvas;
 
-        let tick = () => {
+        let tick = async () => {
             if (video.readyState == video.HAVE_ENOUGH_DATA) {
                 canvasElement.hidden = false;
                 canvasElement.height = video.videoHeight;
@@ -52,10 +52,41 @@ export default {
                 });
 
                 if (code) {
+                    this.animate = false;
                     this.drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
                     this.drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
                     this.drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
                     this.drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+
+                    let login_data = {
+                        station: code.data
+                    };
+                    let localScanner = this.$localStorage.get('scanner_uuid', null);
+                    if (localScanner !== null && localScanner != "null") {
+                        login_data['scanner'] = localScanner;
+                    }
+                    this.$http.post("/api/scanner", login_data).then(res => {
+                        if (res.status != 200) {
+                            alert(res.data.error ? res.data.error : "ERROR. The API Seems to be offline");
+                            this.animate = true;
+                            requestAnimationFrame(tick);
+                        } else {
+                            this.$localStorage.set('scanner_uuid', res.data.scanner_uuid); 
+                            if (res.data.station_name &&
+                                res.data.station_name !== null && 
+                                res.data.station_name != "null") {
+                                this.$root.station_name = res.data.station_name;
+                            } else {
+                                res.data.station_name = null;
+                            }
+                            this.$root.station_id = code.data;
+                            this.$router.push({ name: 'tab-scan' });
+                        }
+                    }).catch(e => {
+                        alert(e.toString());
+                        this.animate = true;
+                        requestAnimationFrame(tick);
+                    });
                     /*
                     Api request
                         pass -> route push scan; return

@@ -36,7 +36,7 @@ router.post('/', bodyParser.json(), function(req, res) {
 
     // check if station uuid exists
     let station_uuid: string = req.body.station
-    let check_station = DB().queryFirstCell(sql_station, station_uuid);
+    let check_station = DB().queryFirstRow(sql_station, station_uuid);
     if (check_station === undefined) {
         // station uuid not in database
         logger.warn("POST api.tracker.scanner / Bad station uuid")

@@ -9,11 +9,11 @@ import { User, Login } from './../types';
 import { RequestHandler } from 'express';
 
 export let secure: RequestHandler = function(req, res, next)  {
-    if (req.cookies.scanner_uuid === undefined) {
+    if (req.headers.authorization === undefined) {
         res.status(401).json({ error: "Not logged in", errorid: 3 });
     } else {
-        let scanner_uuid = req.cookies.scanner_uuid;
-        res.locals.scanner_uuid = req.cookies.scanner_uuid;
+        let scanner_uuid: string = req.headers.authorization;
+        res.locals.scanner_uuid = scanner_uuid;
 
         let e: Error | null = null;
         let u: User | null = null;

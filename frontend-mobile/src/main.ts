@@ -44,6 +44,10 @@ let vm = new Vue({
         station_id: {
             type: String,
             default: null
+        },
+        scanner_uuid: {
+            type: String,
+            default: null
         }
     }
 }).$mount('#app');
@@ -53,12 +57,10 @@ vm.$http.interceptors.request.use(function (config: any) {
     config.timeout = 1000;
     config.validateStatus = function (status: number) {
         return true;
-    };
-    let sid: { [key: string] : string } = cookie.parse(document.cookie);
-    if (sid['connect.id']) {
-        config.headers.cookie += cookie.serialize('connect.id', sid['connect.id'], {
-            secure: true,
-        }) + ";";
+    }
+    let scanner_uuid: String | null = vm.$localStorage.get('scanner_uuid', null);
+    if (scanner_uuid !== null && scanner_uuid != "null") {
+        config.headers['Authorization'] = scanner_uuid;
     }
     return config;
 }, function (error: any) {
