@@ -16,17 +16,56 @@ const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'login',
-        component: Login
+        component: Login,
+        meta: { nl: true }
     },
-    { path: '/scan', name: 'tab-scan', component: Scan },
-    { path: '/info', name: 'tab-info', component: Info },
-    { path: '/history', name: 'tab-history', component: HistoryComponent },
-    { path: '/lostqr', name: 'tab-lostqr', component: Lostqr },
-    { path: '/help', name: 'tab-help', component: Help }
+    {
+        path: '/scan',
+        name: 'tab-scan',
+        component: Scan,
+        meta: { l: true }
+    },
+    {
+        path: '/info',
+        name: 'tab-info',
+        component: Info,
+        meta: { nl: true }
+    },
+    {
+        path: '/history',
+        name: 'tab-history',
+        component: HistoryComponent,
+        meta: { nl: true }
+    },
+    {
+        path: '/lostqr',
+        name: 'tab-lostqr',
+        component: Lostqr,
+        meta: { l: true }
+    },
+    {
+        path: '/help',
+        name: 'tab-help',
+        component: Help,
+        meta: { nl: true }
+    }
 ]
 
 const router = new VueRouter({
   routes
+});
+
+router.beforeEach((to, from, next) => {
+    if(to.matched.some(record => record.meta.l)) {
+        if (localStorage.getItem('station_uuid') === null ||
+            localStorage.getItem('station_uuid') === '') {
+            next(false);
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
 });
 
 export default router;
