@@ -24,6 +24,10 @@ yarn-error.log*
 *.db-wal
 
 
+frontend-mobile/dist
+frontend-mobile/dist/*
+frontend-mobile/dist/**/*
+
 .DS_Store
 node_modules
 /dist

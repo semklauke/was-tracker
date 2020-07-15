@@ -48,6 +48,10 @@ let vm = new Vue({
         scanner_uuid: {
             type: String,
             default: null
+        },
+        offline_codes: {
+            type: String,
+            default: ''
         }
     }
 }).$mount('#app');

@@ -50,6 +50,13 @@
 </template>
 
 <style>
+
+body {
+    height: 100%;
+}
+#app {
+    height: 100%;
+}
 .tabbaricon {
     width: 100%;
     height: 100%;
@@ -95,7 +102,7 @@
     width: 100%;
 }
 #navbar {
-    margin-bottom: 50px;
+    margin-bottom: 70px;
 }
 </style>
 
