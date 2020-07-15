@@ -57,8 +57,8 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if(to.matched.some(record => record.meta.l)) {
-        if (localStorage.getItem('station_uuid') === null ||
-            localStorage.getItem('station_uuid') === '') {
+        if (localStorage.getItem('station_id') === null ||
+            localStorage.getItem('station_id') === '') {
             next(false);
         } else {
             next();

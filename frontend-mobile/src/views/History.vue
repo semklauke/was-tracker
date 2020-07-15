@@ -61,7 +61,8 @@ export default {
                     MessageBox.alert("Server Fehler", 'Fehler');
                 } else {
                     MessageBox.alert(
-                        this.codes.length+" checkins hochgeladen. Bitte die offline gespeicherten checkins löschen",
+                        res.data.count + "/" + this.codes.length +
+                        " checkins hochgeladen. Bei 100% specher bitte leeren",
                         "Erfolg"
                     );
                 }
@@ -70,7 +71,7 @@ export default {
             });
         },
         clearOffline() {
-            for (c in this.codes) {
+            for (c of this.codes) {
                 localStorage.removeItem(c.code_uuid);
             }
             this.$localStorage.set('offline_codes', '');
@@ -85,7 +86,7 @@ export default {
         next(vm => {
             let keys = vm.$localStorage.get('offline_codes', '');
             if (keys != '')
-            for (k in keys.split(';')) {
+            for (k of keys.split(';')) {
                 let d = localStorage.getItem(k);
                 if (d) {
                     let dd = d.split(';');
