@@ -60,11 +60,11 @@ router.post('/', secure, bodyParser.json(), function(req, res) {
     }
 
     // check if station uuid exists
-    let station_uuid: string = req.body.station
+    let station_uuid: string = req.body.station;
     let check_station = DB().queryFirstCell(sql_station, station_uuid);
     if (check_station === undefined) {
         // station uuid not in database
-        logger.warn("POST api.tracker.checkin / Bad station uuid")
+        logger.warn("POST api.tracker.checkin / Bad station uuid");
         res.status(404).json({ error: 'station uuid not valid', errorid: 457 });
         return;
     }
@@ -119,7 +119,7 @@ router.post('/station/:station_uuid', secure, bodyParser.json(), function(req, r
     let check_station = DB().queryFirstCell(sql_station, station_uuid);
     if (check_station === undefined) {
         // station uuid not in database
-        logger.warn("POST api.tracker.checkin.station / Bad station uuid")
+        logger.warn("POST api.tracker.checkin.station / Bad station uuid");
         res.status(404).json({ error: 'station uuid not valid', errorid: 287 });
         return;
     }
@@ -162,5 +162,51 @@ router.get('/code/:code_uuid', secure, function(req, res) {
 
     let checkins: any[] = DB().query(sql_checkins_code, code_uuid);
     res.status(200).json({ success: "Success", checkins, length: checkins.length });
+
+});
+
+// add new checking from offline
+router.post('/offline', secure, bodyParser.json(), function(req, res) {
+
+    logger.debug("POST api.tracker.checkin.offline /");
+
+    // check if station exists in request
+    if (!req.body.codes) {
+        logger.warn("POST api.tracker.checkin.offline / No Codes");
+        res.status(400).json({ error: 'add codes to request', errorid: 2548 });
+        return;
+    }
+
+    // scanner uuid from auth with cookie
+    let scanner_id: number = parseInt(res.locals.scanner_id);
+    let success: number = 0;
+
+    for (let c of req.body.codes) {
+        // check if station uuid exists
+        let check_station = DB().queryFirstCell(sql_station, c.station_uuid);
+        if (check_station === undefined) {
+            // station uuid not in database
+            logger.warn("POST api.tracker.checkin.offline / Bad station uuid");
+            logger.info("Failed offline upload: ", c);
+            continue;
+        }
+
+        // get code rec_id for code
+        let check_code = DB().queryFirstCell(sql_code, c.code_uuid);
+        if (check_code === undefined) {
+            logger.warn("POST api.tracker.checkin.offline / Bad code uuid")
+            logger.info("Failed offline upload: ", c);
+            continue;
+        }
+
+        // all good insert checkin
+        DB().insert('checkins', {
+            code_id: parseInt(check_code),
+            station_id: parseInt(check_station),
+            scanner_id
+        });
+        success++;
+    }
+    res.status(200).json({ success: "Success", count: success });
 
 });
