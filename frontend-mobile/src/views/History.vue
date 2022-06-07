@@ -7,7 +7,7 @@
                         @click="uploadOffline" 
                         id="history-upload-btn"
                 >
-                    Upload <img src="assets/sync.svg" alt="upload"/>
+                    Upload <img src="/assets/sync.svg" alt="upload"/>
                 </button>
             </div>
             <div class="col">
@@ -16,7 +16,7 @@
                         @click="clearOffline"
                         id="history-clear-btn"
                 >
-                    Clear <img src="assets/dismiss.svg" alt="dismiss"/>
+                    Clear <img src="/assets/dismiss.svg" alt="dismiss"/>
                 </button>
             </div>
         </div>

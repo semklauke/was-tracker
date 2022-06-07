@@ -3,10 +3,13 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 
-// Mint UI
-import { Tabbar, TabItem } from 'mint-ui';
-Vue.component(Tabbar.name, Tabbar);
-Vue.component(TabItem.name, TabItem);
+// Mint UI 
+// import { Tabbar, TabItem } from 'mint-ui';
+// Vue.component(Tabbar.name, Tabbar);
+// Vue.component(TabItem.name, TabItem);
+import Mint from 'mint-ui';
+import 'mint-ui/lib/style.css';
+ Vue.use(Mint);
 
 // http connection
 

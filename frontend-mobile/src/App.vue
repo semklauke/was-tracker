@@ -26,23 +26,23 @@
 
     <mt-tabbar v-model="activetab">
         <mt-tab-item id="tab-scan">
-            <img slot="icon" class="tabbaricon" src="assets/scan.svg" />
+            <img slot="icon" class="tabbaricon" src="/assets/scan.svg" />
             SuS
         </mt-tab-item>
         <mt-tab-item id="tab-info">
-            <img slot="icon" class="tabbaricon" src="assets/info.svg" />
+            <img slot="icon" class="tabbaricon" src="/assets/info.svg" />
             Info
         </mt-tab-item>
         <mt-tab-item id="tab-history">
-            <img slot="icon" class="tabbaricon" src="assets/history.svg" />
+            <img slot="icon" class="tabbaricon" src="/assets/history.svg" />
             History
         </mt-tab-item>
         <mt-tab-item id="tab-lostqr">
-            <img slot="icon" class="tabbaricon" src="assets/lostqr.svg" />
+            <img slot="icon" class="tabbaricon" src="/assets/lostqr.svg" />
             Kein QR
         </mt-tab-item>
         <mt-tab-item id="tab-help">
-            <img slot="icon" class="tabbaricon" src="assets/help.svg" />
+            <img slot="icon" class="tabbaricon" src="/assets/help.svg" />
             Help
         </mt-tab-item>
     </mt-tabbar>
