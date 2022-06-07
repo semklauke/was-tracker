@@ -29,6 +29,7 @@ export let secure: RequestHandler = function(req, res, next)  {
                 next();
             }
         } catch (error) {
+            res.status(500).json({ error: "DATABASE ERROR. Contact admin", errorid: 4 });
             logger.error("DB ERROR | tracker secure");
         }
         

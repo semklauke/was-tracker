@@ -10,6 +10,7 @@ import DB from 'better-sqlite3-helper';
 import winston from 'winston';
 import path from 'path';
 import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import url from 'url';
 
@@ -22,10 +23,12 @@ import config from './includes/config';
 // important globals
 const app: express.Express = express();
 let server: https.Server;
+let server_http: http.Server; 
 let server6: https.Server;
 
 // express setup
-const port: number = config.port || 443;
+const port_https: number = config.port.https || 443;
+const port_http: number = config.port.http || 80;
 let sslOptions: https.ServerOptions;
 
 app.use('/assets', express.static(path.resolve(__dirname, config.frontend_folder, 'assets')));
@@ -63,19 +66,28 @@ try {
 
     logger.info('Starting node https server on ipv4 and ipv6');
 
-    server = https.createServer(sslOptions, app).listen(port, config.ip.ipv4, () => {
-        logger.info('-------- IPv4 SERVER IS RUNNING --------');
-        logger.info('at: https://%s:%d', config.ip.ipv4, port);
-    });
+    if (config.https) {
+        server = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv4, () => {
+            logger.info('-------- IPv4 SERVER IS RUNNING --------');
+            logger.info('at: https://%s:%d', config.ip.ipv4, port_https);
+        });
 
-    if (config.ipv6) {
-        server6 = https.createServer(sslOptions, app).listen(port, config.ip.ipv6, () => {
-            logger.info('-------- IPv6 SERVER IS RUNNING --------');
-            logger.info('at: https://[%s]:%d', config.ip.ipv6, port);
+        if (config.ipv6) {
+            server6 = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv6, () => {
+                logger.info('-------- IPv6 SERVER IS RUNNING --------');
+                logger.info('at: https://[%s]:%d', config.ip.ipv6, port_https);
+            });
+        }
+    }
+    if (config.http) {
+        server_http = http.createServer(app).listen(port_http, config.ip.ipv4, () => {
+            logger.info('-------- IPv4 HTTP SERVER IS RUNNING --------');
+            logger.info('at: http://%s:%d', config.ip.ipv4, port_http);
         });
     }
 
-} catch (err) {
+} catch (err: any) {
+    if (!err) err = new Error("DB Setup error");
     logger.error(err.toString());
     process.exit(1);
 }

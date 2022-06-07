@@ -55,6 +55,11 @@ router.get('/:station_uuid', secure, function(req, res) {
     res.status(200).json({ success: 'Success', station });
 });
 
+router.post('/', secure, bodyParser.json(), function(req, res) {
+
+    logger.debug("GET api.tracker")
+});
+
 /*
 router.put('/:station_uuid', bodyParser.json(), function(req, res) {
 

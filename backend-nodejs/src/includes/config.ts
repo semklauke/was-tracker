@@ -10,8 +10,17 @@ export default {
     // is the appliaction in debbuging mode (true/false)
     "debug" : false,
 
+    // start http server
+    "http" : true,
+
+    // start https server
+    "https": true,
+
     // port the backend server is running on
-    "port" : 443,
+    "port" : {
+        "http" : 80,
+        "https" : 443
+    },
 
     // paths to the ssl private key and certificate, relative to the project root
     "ssl" : {
