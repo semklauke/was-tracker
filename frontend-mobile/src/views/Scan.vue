@@ -30,7 +30,10 @@
 </template>
 
 <script>
-import { Toast } from 'mint-ui';
+/*UPGRADE*/
+//import { Toast } from 'mint-ui';
+function Toast({ message, duration }) {}
+
 export default {
     data: function () {
         return {
@@ -158,7 +161,8 @@ export default {
                 if (res.status == 404) {
                     this.saveCodeOffline(code);
                     this.request_info_text = "Läufer offline gespeichert!";
-                    this.toggleRequestClass('alert-warning');         
+                    this.toggleRequestClass('alert-warning');
+                    /*UPGRADE*/
                     Toast({
                         message: '✓',
                         duration: 3500
@@ -166,6 +170,7 @@ export default {
                 } else if (res.status != 200) {
                     this.request_info_text = "Fehler aufgetreten!";
                     this.toggleRequestClass('alert-danger');
+                    /*UPGRADE*/
                     Toast({
                         message: '✗',
                         duration: 3500,
@@ -174,6 +179,7 @@ export default {
                     // worked 
                     this.request_info_text = "Läufer regrestriert!";
                     this.toggleRequestClass('alert-success');
+                    /*UPGRADE*/
                     Toast({
                         message: '✓',
                         duration: 3500,
@@ -192,6 +198,7 @@ export default {
             });
         },
         saveCodeOffline(code) {
+            /*UPGRADE*/
             let keys = this.$localStorage.get('offline_codes', '');
             this.$localStorage.set('offline_codes', keys+code+";");
             let value = Math.floor(Date.now()/1000).toString() + ";";

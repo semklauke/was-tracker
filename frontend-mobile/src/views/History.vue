@@ -38,7 +38,8 @@
 </template>
 
 <script>
-import { MessageBox } from 'mint-ui';
+// we removed mint-ui /*UPGRADE*/
+//import { MessageBox } from 'mint-ui'; 
 export default {
     data: function () {
         return {
@@ -55,25 +56,28 @@ export default {
                 codes: this.codes, 
                 length: this.codes.length
             }).then(res => {
-                if (res.status == 404) {      
-                    MessageBox.alert("Immernoch kein Verbindung :/", 'Fehler');         
+                if (res.status == 404) {
+                    /*UPGRADE*/   
+                    /*MessageBox.*/alert("Immernoch kein Verbindung :/", 'Fehler');         
                 } else if (res.status != 200) {
-                    MessageBox.alert("Server Fehler", 'Fehler');
+                    /*MessageBox.*/alert("Server Fehler", 'Fehler');
                 } else {
-                    MessageBox.alert(
+                    /*MessageBox.*/alert(
                         res.data.count + "/" + this.codes.length +
                         " checkins hochgeladen. Bei 100% specher bitte leeren",
                         "Erfolg"
                     );
                 }
             }).catch(e => {
-                MessageBox.alert(e.toString(), 'Fehler#');
+                /*UPGRADE*/
+                /*MessageBox.*/alert(e.toString(), 'Fehler#');
             });
         },
         clearOffline() {
             for (c of this.codes) {
                 localStorage.removeItem(c.code_uuid);
             }
+            /*UPGRADE*/
             this.$localStorage.set('offline_codes', '');
             this.codes = [];
         }
@@ -84,6 +88,7 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            /*UPGRADE*/
             let keys = vm.$localStorage.get('offline_codes', '');
             if (keys != '')
             for (k of keys.split(';')) {

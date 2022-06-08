@@ -3,18 +3,9 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 
-// Mint UI 
-// import { Tabbar, TabItem } from 'mint-ui';
-// Vue.component(Tabbar.name, Tabbar);
-// Vue.component(TabItem.name, TabItem);
-import Mint from 'mint-ui';
-import 'mint-ui/lib/style.css';
- Vue.use(Mint);
-
 // http connection
 
 import axios from 'axios';
-import cookie from 'cookie';
 Vue.prototype.$http = axios;
 
 // vue config
@@ -26,10 +17,6 @@ Vue.prototype.$jsqr = jsQR;
 
 // import boostrap for look
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-// local stoarge for offline usage
-import VueLocalStorage from 'vue-localstorage';
-Vue.use(VueLocalStorage);
 
 // create vue app
 let vm = new Vue({

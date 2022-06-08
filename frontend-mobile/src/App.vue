@@ -24,7 +24,7 @@
     </transition>
 
 
-    <mt-tabbar v-model="activetab">
+    <!--/*UPGRADE*/mt-tabbar v-model="activetab">
         <mt-tab-item id="tab-scan">
             <img slot="icon" class="tabbaricon" src="/assets/scan.svg" />
             SuS
@@ -45,7 +45,7 @@
             <img slot="icon" class="tabbaricon" src="/assets/help.svg" />
             Help
         </mt-tab-item>
-    </mt-tabbar>
+    </mt-tabbar-->
 </div>
 </template>
 
@@ -122,6 +122,7 @@ export default {
     },
     methods: {
         fetchLocalStore() {
+            /*UPGRADE*/
             this.$root.station_name = this.$localStorage.get('station_name', null);
             this.$root.station_id = this.$localStorage.get('station_id', null);
         },
@@ -145,9 +146,11 @@ export default {
             }
         },
         '$root.station_name': function(val) {
+            /*UPGRADE*/
             this.$localStorage.set('station_name', val);
         },
         '$root.station_id': function(val) {
+            /*UPGRADE*/
             this.$localStorage.set('station_id', val);
         }
 

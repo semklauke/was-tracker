@@ -71,6 +71,7 @@ export default {
                             this.animate = true;
                             requestAnimationFrame(tick);
                         } else {
+                            /*UPGRADE*/
                             this.$localStorage.set('scanner_uuid', res.data.scanner_uuid); 
                             if (res.data.station_name &&
                                 res.data.station_name !== null && 

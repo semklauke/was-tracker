@@ -9,22 +9,22 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "@types/cookie": "^0.4.0",
-    "@vitejs/plugin-vue": "^2.3.3",
-    "axios": "^0.21.1",
-    "bootstrap": "^4.5.0",
-    "cookie": "^0.4.1",
+    "@vue/compat": "^3.2.37",
+    "@vueuse/core": "^8.6.0",
+    "axios": "^0.27.2",
+    "vue-axios": "^3.4.1",
+    "bootstrap": "^4.6.1",
     "jsqr": "github:cozmo/jsQR",
-    "mint-ui": "^2.2.13",
-    "vite": "^2.9.10",
-    "vite-plugin-vue2": "2.0.1",
-    "vue": "^2.6.11",
-    "vue-localstorage": "^0.6.2",
-    "vue-router": "^3.2.0",
-    "vue-template-compiler": "^2.6.14"
+    "vue": "^3.2.37",
+    "vue-router": "^4.0.15",
+    "pinia": "^2.0.14"
   },
   "devDependencies": {
-    "typescript": "4"
+    "@vitejs/plugin-vue": "^2.3.3",
+    "@vue/compiler-sfc": "^3.2.37",
+    "typescript": "4",
+    "vite": "^2.9.10",
+    "vite-plugin-vue2": "2.0.1"
   },
   "browserslist": [
     "> 1%",
