@@ -1,27 +1,78 @@
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { useRouter, useRoute } from 'vue-router'
+import { useOfflineStore } from './stores/offlineStore'
+import type { OfflineStore } from './stores/offlineStore'
+import { onMounted } from 'vue';
+
+const router = useRouter()
+const route = useRoute()
+
+/* --- data --- */
+const offline_store = useOfflineStore();
+const { station_name } = storeToRefs(offline_store)
+
+/* --- component hooks --- */
+onMounted(() => {
+    // if there is already saved state in localStorage - load it
+    const localStorage_string = localStorage.getItem('offlineStore')
+    if (localStorage_string !== null) {
+        let localStorage_json = JSON.parse(localStorage_string) as OfflineStore
+        offline_store.$patch(state => {
+            for (const key in localStorage_json) {
+                //@ts-ignore
+                state[key] = localStorage_json[key]
+            }
+        })
+
+    } 
+})
+
+// sync offlineStore with localStorage
+offline_store.$subscribe((_, state: OfflineStore) => {
+    localStorage.setItem('offlineStore', JSON.stringify(state))
+}, { detached: true })
+
+/* --- frontend methods --- */
+function clearStation() {
+    if (window.confirm("Ausloggen?")) {
+        offline_store.$reset()
+    }
+}
+
+function goToLogin() {
+    if (route.path != "/") {
+        router.push({ name: 'login' });
+    }
+}
+</script>
+
 <template>
 <div id="app">
     <nav class="navbar navbar-light bg-light border-bottom" id="navbar">
         <span class="navbar-brand mb-0 h1" id="wastrackerbrand">WaS-Tracker</span>
-        <form class="form-inline" v-show="$root.station_name == 'null' || $root.station_name == null">
+        <form class="form-inline" v-show="station_name == 'null' || station_name == null">
             <button class="btn btn-primary btn-sm" type="submit" @click="goToLogin">Login</button>
         </form>
     </nav>
 
-    <div class="fixed-bottom bg-primary text-white" v-show="$root.station_name != 'null' && $root.station_name != null" id="station_info">
-        <div id="station_info_name">{{ $root.station_name }}</div>
+    <div class="fixed-bottom bg-primary text-white" v-show="station_name != 'null' && station_name != null" id="station_info">
+        <div id="station_info_name">{{ station_name }}</div>
         <div id="station_info_dismiss_span" @click="clearStation">
             &#215;
         </div> 
         <span class="clearfix"></span>
     </div>
 
-    <transition
-        enter-active-class="animated fadeIn faster"
-        leave-active-class="animated fadeOut faster"
-        mode="out-in"
-    >
-        <router-view></router-view>
-    </transition>
+    <router-view v-slot="{ Component }">
+        <transition
+            enter-active-class="animated fadeIn faster"
+            leave-active-class="animated fadeOut faster"
+            mode="out-in"
+        >
+            <component :is="Component" />
+        </transition>
+    </router-view>
 
 
     <!--/*UPGRADE*/mt-tabbar v-model="activetab">
@@ -48,6 +99,7 @@
     </mt-tabbar-->
 </div>
 </template>
+
 
 <style>
 
@@ -93,7 +145,7 @@ body {
     color: #BFBFBF;
     text-align: right;
     padding-right: 15px;
-    display: inline-block;
+    /*display: inline-block;*/
     height: 100%;
     line-height: 38px;
     font-size: 2em;
@@ -106,56 +158,4 @@ body {
 }
 </style>
 
-<script>
-export default {
-    data: function () {
-        return { 
-            activetab: ''
-        };
-    },
-    mounted() {
-        this.fetchLocalStore();
-        this.fetchRoute();
-    },
-    updated() {
-        this.fetchLocalStore();
-    },
-    methods: {
-        fetchLocalStore() {
-            /*UPGRADE*/
-            this.$root.station_name = this.$localStorage.get('station_name', null);
-            this.$root.station_id = this.$localStorage.get('station_id', null);
-        },
-        fetchRoute() {
-            this.activetab = "tab-" + this.$route.path.substring(1)
-        },
-        clearStation() {
-            this.$root.station_name = null;
-            this.$root.station_id = null;        
-        },
-        goToLogin() {
-            if (this.$route.path != "/") {
-                this.$router.push({ name: 'login' });
-            }
-        }
-    },
-    watch: {
-        activetab: function(val) {
-            if (val != "tab-" + this.$route.path.substring(1)) {
-                this.$router.push({ name: val });
-            }
-        },
-        '$root.station_name': function(val) {
-            /*UPGRADE*/
-            this.$localStorage.set('station_name', val);
-        },
-        '$root.station_id': function(val) {
-            /*UPGRADE*/
-            this.$localStorage.set('station_id', val);
-        }
-
-    }
-};
-
-</script>
 

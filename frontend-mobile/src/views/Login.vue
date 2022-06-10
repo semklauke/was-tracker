@@ -61,6 +61,7 @@ export default {
                     let login_data = {
                         station: code.data
                     };
+                    /*UPGRADE*/
                     let localScanner = this.$localStorage.get('scanner_uuid', null);
                     if (localScanner !== null && localScanner != "null") {
                         login_data['scanner'] = localScanner;
