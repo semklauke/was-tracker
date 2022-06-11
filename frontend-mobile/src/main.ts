@@ -1,67 +1,51 @@
-// @ts-nocheck
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-
-// http connection
-
 import axios from 'axios';
-Vue.prototype.$http = axios;
-
-// vue config
-Vue.config.productionTip = false;
-
-// adding qrscanner lib
-import jsQR from "jsqr";
-Vue.prototype.$jsqr = jsQR;
-
-// import boostrap for look
-import 'bootstrap/dist/css/bootstrap.min.css';
+import type { AxiosRequestConfig } from 'axios';
+import VueAxios from 'vue-axios';
+import { createPinia } from 'pinia';
 
 // create vue app
-let vm = new Vue({
-    data: {
-        station_name: null,
-        station_id: null
-    },
-    router,
-    render: h => h(App),
-    localStorage: {
-        station_name: {
-            type: String,
-            default: null
-        },
-        station_id: {
-            type: String,
-            default: null
-        },
-        scanner_uuid: {
-            type: String,
-            default: null
-        },
-        offline_codes: {
-            type: String,
-            default: ''
-        }
-    }
-}).$mount('#app');
+let app = createApp(App);
+const pinia = createPinia();
+app.use(pinia)
+
+import { useOfflineStore } from './stores/offlineStore'
 
 // axios login interceptor
-vm.$http.interceptors.request.use(function (config: any) {
+axios.interceptors.request.use(function (config: AxiosRequestConfig) {
+    const offline_store = useOfflineStore(); 
     config.timeout = 1000;
     config.validateStatus = function (status: number) {
         return true;
     }
-    let scanner_uuid: String | null = vm.$localStorage.get('scanner_uuid', null);
+    let scanner_uuid: string | null = offline_store.scanner_uuid;
     if (scanner_uuid !== null && scanner_uuid != "null") {
-        config.headers['Authorization'] = scanner_uuid;
+        if (config.headers) {
+            config.headers['Authorization'] = scanner_uuid;
+        } else {
+            config.headers = {'Authorization': scanner_uuid }
+        }
     }
     return config;
-}, function (error: any) {
+}, function (error) {
+    if (!error) error = new Error("axios interceptor failed")
     return Promise.reject(error);
 });
 
+// add axios to the vue app instance
+app.use(VueAxios, { $http: axios })
 
+// add vue-router
+app.use(router)
 
+// adding qrscanner lib
+import jsQR from "jsqr";
+app.config.globalProperties.$jsqr = jsQR;
+app.provide('$jsqr', app.config.globalProperties.$jsqr)
 
+// import boostrap for look
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+app.mount('#app');

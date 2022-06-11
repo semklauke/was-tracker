@@ -11,7 +11,7 @@ export default defineConfig({
     plugins: [vue({
         template: {
             compilerOptions: {
-                compatConfig: { MODE: 2 }
+                compatConfig: { MODE: 3 }
             }
         }
     })],

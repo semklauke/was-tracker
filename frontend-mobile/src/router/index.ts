@@ -1,6 +1,5 @@
-import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
-
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 // import views from single file components
 import Scan from '../views/Scan.vue';
 import Info from '../views/Info.vue';
@@ -10,9 +9,7 @@ import Help from '../views/Help.vue';
 
 import Login from '../views/Login.vue'
 
-Vue.use(VueRouter);
-
-const routes: Array<RouteConfig> = [
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'login',
@@ -51,8 +48,9 @@ const routes: Array<RouteConfig> = [
     }
 ]
 
-const router = new VueRouter({
-  routes
+const router = createRouter({
+    routes,
+    history: createWebHistory(),
 });
 
 router.beforeEach((to, from, next) => {
