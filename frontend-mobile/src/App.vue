@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-import { useOfflineStore } from './stores/offlineStore'
-import type { OfflineStore } from './stores/offlineStore'
+import { useOfflineStore } from '@/stores/offlineStore'
+import type { OfflineStore } from '@/stores/offlineStore'
 import { onMounted } from 'vue';
 
 const router = useRouter()

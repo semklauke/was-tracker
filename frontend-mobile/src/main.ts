@@ -17,7 +17,7 @@ import { useOfflineStore } from './stores/offlineStore'
 axios.interceptors.request.use(function (config: AxiosRequestConfig) {
     const offline_store = useOfflineStore(); 
     config.timeout = 1000;
-    config.validateStatus = function (status: number) {
+    config.validateStatus = function () {
         return true;
     }
     let scanner_uuid: string | null = offline_store.scanner_uuid;
@@ -36,14 +36,10 @@ axios.interceptors.request.use(function (config: AxiosRequestConfig) {
 
 // add axios to the vue app instance
 app.use(VueAxios, { $http: axios })
+app.provide('$http',  app.config.globalProperties.$http)
 
 // add vue-router
 app.use(router)
-
-// adding qrscanner lib
-import jsQR from "jsqr";
-app.config.globalProperties.$jsqr = jsQR;
-app.provide('$jsqr', app.config.globalProperties.$jsqr)
 
 // import boostrap for look
 import 'bootstrap/dist/css/bootstrap.min.css';
