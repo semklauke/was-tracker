@@ -1,13 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from '@ionic/vue-router';
 import type { RouteRecordRaw } from 'vue-router';
-// import views from single file components
-import Scan from '../views/Scan.vue';
-import Info from '../views/Info.vue';
-import HistoryComponent from '../views/History.vue';
-import Lostqr from '../views/Lostqr.vue';
-import Help from '../views/Help.vue';
 
-import Login from '../views/Login.vue'
+// import views from single file components
+import Scan from '@/views/Scan.vue';
+import Info from '@/views/Info.vue';
+import HistoryComponent from '@/views/History.vue';
+import Lostqr from '@/views/Lostqr.vue';
+import Help from '@/views/Help.vue';
+import Login from '@/views/Login.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -50,7 +50,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
     routes,
-    history: createWebHistory(),
+    history: createWebHistory(), //import.meta.env.BASE_URL
 });
 
 router.beforeEach((to, from, next) => {

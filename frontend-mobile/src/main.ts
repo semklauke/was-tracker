@@ -5,11 +5,13 @@ import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 import VueAxios from 'vue-axios';
 import { createPinia } from 'pinia';
+import { IonicVue } from '@ionic/vue';
 
 // create vue app
 let app = createApp(App);
 const pinia = createPinia();
 app.use(pinia)
+app.use(IonicVue)
 
 import { useOfflineStore } from './stores/offlineStore'
 
@@ -42,6 +44,25 @@ app.provide('$http',  app.config.globalProperties.$http)
 app.use(router)
 
 // import boostrap for look
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
-app.mount('#app');
+/* Core CSS required for Ionic components to work properly */
+import '@ionic/vue/css/core.css';
+
+/* Basic CSS for apps built with Ionic */
+import '@ionic/vue/css/normalize.css';
+import '@ionic/vue/css/structure.css';
+import '@ionic/vue/css/typography.css';
+
+/* Optional CSS utils that can be commented out */
+import '@ionic/vue/css/padding.css';
+import '@ionic/vue/css/float-elements.css';
+import '@ionic/vue/css/text-alignment.css';
+import '@ionic/vue/css/text-transformation.css';
+import '@ionic/vue/css/flex-utils.css';
+import '@ionic/vue/css/display.css';
+import './includes/variables.css'
+
+router.isReady().then(() => {
+    app.mount('#app');
+});

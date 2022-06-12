@@ -5,11 +5,14 @@
   "scripts": {
     "dev": "vite",
     "dev-host": "vite --host",
+    "tsc": "vue-tsc --noEmit --allowJS",
     "serve": "vite preview",
     "build": "vite build",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "@ionic/vue": "^6.1.9",
+    "@ionic/vue-router": "^6.1.9",
     "@vue/compat": "^3.2.37",
     "@vueuse/core": "^8.6.0",
     "axios": "^0.27.2",
@@ -21,12 +24,16 @@
     "vue-router": "^4.0.15"
   },
   "devDependencies": {
+    "@ionic/cli": "^6.19.1",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vue/compiler-sfc": "^3.2.37",
+    "cordova-res": "^0.15.4",
+    "native-run": "^1.6.0",
     "typescript": "4",
     "vite": "^2.9.10",
     "vite-plugin-mkcert": "^1.7.1",
-    "vite-plugin-vue2": "2.0.1"
+    "vite-plugin-vue2": "2.0.1",
+    "vue-tsc": "^0.37.3"
   },
   "browserslist": [
     "> 1%",
