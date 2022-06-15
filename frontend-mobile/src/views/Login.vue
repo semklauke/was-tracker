@@ -1,49 +1,93 @@
 <script lang="ts" setup>
-import { onMounted, ref, inject } from 'vue'
+import { ref, inject } from 'vue';
+import { onIonViewDidEnter } from '@ionic/vue';
 import QrScanner from 'qr-scanner'
 import type { AxiosInstance, AxiosError } from 'axios'
 import { useOfflineStore } from '@/stores/offlineStore';
 import { isNull } from '@/includes/helper'
-import { useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
+// import components
+import {
+    IonPage,
+    IonContent,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonGrid,
+    IonCol,
+    IonRow,
+    IonButtons,
+    IonButton,
+    IonIcon
+} from '@ionic/vue';
+// import icons
+import { 
+    camera,
+    cameraOutline,
+    flashlightOutline
+} from 'ionicons/icons';
 
+/* --- composable and inject --- */
 const $http: AxiosInstance = inject('$http') as AxiosInstance
-let qrScanner: QrScanner;
+let qrScanner: QrScanner | null;
 const offline_store = useOfflineStore();
-const rounter = useRouter();
+const router = useRouter();
 
 /* --- data --- */
 let foundQr = ref(false)
+let showModal = ref(true)
+let showVideo = ref(false)
+let hasFlash = ref(false)
+let cameras = ref<QrScanner.Camera[]>([])
 
 /* --- lifecycle hooks --- */
-onMounted(() => {
-    if (navigator === undefined 
-     || navigator.mediaDevices === undefined 
-     || navigator.mediaDevices.getUserMedia === undefined) {
-        alert("Ihr Brwoser unterstützt keine Cameras bzw. hat nicht die Berechtigung diese zu nutzen");
-        return;
+onIonViewDidEnter(() => {
+    if (!foundQr.value) {
+        qrScanner?.start();
+        if (qrScanner) showVideo.value = true;
+    } else {
+        showVideo.value = false;
     }
-    let videoElem = document.getElementById("login-scan-video") as HTMLVideoElement
-    qrScanner = new QrScanner(videoElem,loginWithCode, {
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
-        returnDetailedScanResult: true,
-        onDecodeError: () => {}
-    });
-    qrScanner.start();
-});
+})
 
 onBeforeRouteLeave((to, from ,next) => {
     foundQr.value = false;
-    qrScanner.stop();
+    showVideo.value = false;
+    qrScanner?.stop();
     next();
 });
+
+function onModalMounted() {
+    QrScanner.hasCamera().then(async () => {
+        QrScanner.listCameras().then(cams => {
+            cameras.value = cams
+        }) 
+        if (!qrScanner) {
+            let videoElem = document.getElementById("login_scan_video") as HTMLVideoElement
+            qrScanner = new QrScanner(videoElem, loginWithCode, {
+                highlightScanRegion: true,
+                highlightCodeOutline: true,
+                returnDetailedScanResult: true,
+                onDecodeError: () => {}
+            });
+        }
+        await qrScanner?.start();
+        hasFlash.value = await qrScanner.hasFlash();
+        showVideo.value = true;
+    }).catch(err => {
+        showVideo.value = false;
+        alert("Ihr Brwoser unterstützt keine Cameras bzw. hat nicht die Berechtigung diese zu nutzen");
+    });
+}
 
 /* --- methods --- */
 function loginWithCode(result: QrScanner.ScanResult) : void {
     // stop scanner
-    if (result.data == "" || foundQr.value === true) return;
+    if (result.data == "" || foundQr.value === true || !qrScanner) return;
     foundQr.value = true;
-    qrScanner.stop();
+    showVideo.value = false;
+    qrScanner?.stop();
 
     // gather data for the login api
     let login_data: { station: string; scanner?: string } = {
@@ -63,7 +107,7 @@ function loginWithCode(result: QrScanner.ScanResult) : void {
                 alert("The api backend seems to be offline. Contact admin")
             }
             foundQr.value = false;
-            qrScanner.start();
+            qrScanner?.start();
         } else if (res.status == 401) {
             // scanner uuid is bad, try without
             offline_store.scanner_uuid = null;
@@ -74,7 +118,7 @@ function loginWithCode(result: QrScanner.ScanResult) : void {
             console.error("Unknown /api/scanner error: "+res.status)
             alert("An unknown error occured. Please try again")
             foundQr.value = false;
-            qrScanner.start();
+            qrScanner?.start();
         } else {
             // 200 sucess
             offline_store.$patch(state => {
@@ -85,8 +129,10 @@ function loginWithCode(result: QrScanner.ScanResult) : void {
                 //@ts-ignore
                 state.station_uuid = result.data;
             });
+            qrScanner?.destroy();
+            qrScanner = null;
             // naviatge away from login
-            rounter.push({ name: 'tab-scan' });
+            router.push({ name: 'tab-scan' });
         }
     }).catch((err: AxiosError) => {
         console.error(err)
@@ -94,7 +140,7 @@ function loginWithCode(result: QrScanner.ScanResult) : void {
             alert("No Internert connection!!")
         }
         foundQr.value = false;
-        qrScanner.start();
+        qrScanner?.start();
     })
     
 }
@@ -105,35 +151,85 @@ function handleOffline() : boolean {
     }
     return !navigator.onLine
 }
+
+function dismissModal() {
+    showModal.value = false;
+    setTimeout(() => { router.back(); }, 200);
+}
+
+function changeCam(cam_id: QrScanner.DeviceId) {
+    qrScanner?.setCamera(cam_id)
+}
 </script>
 
 <template>
-<div id="tab-login-container" class="container-xl">
-    <div class="row">
-        <div class="col-12" id="login-heading">
-            <h2>Stations Code scannen</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12" id="login-scan-container">
-            <video 
-                id="login-scan-video"
-                disablepictureinpicture
-                muted
-                playsinline
-            ></video>
-        </div>
-    </div>
-</div> 
+<ion-page>
+    <ion-modal :is-open="showModal" 
+               :canDismiss="true" 
+               :swipe-to-close="false"
+               @didPresent="onModalMounted">
+        <ion-header translucent>
+            <ion-toolbar>
+              <ion-title>Login</ion-title>
+              <ion-buttons slot="end">
+                <ion-button @click="dismissModal">Cancle</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+        <ion-content fullscreen>
+            <ion-grid>
+                <ion-row>
+                    <ion-col >
+                        <h1 class="ion-text-center">Scanne Stations QR-Code</h1>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                        <div class="ion-padding 
+                                    ion-justify-content-center 
+                                    ion-align-items-center" 
+                             id="login_scan_container"
+                        >
+                            <ion-icon :icon="camera" id="login_scan_icon" v-show="!showVideo" />
+                            <video 
+                                id="login_scan_video"
+                                disablepictureinpicture
+                                muted
+                                playsinline
+                            ></video>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                <ion-row class="ion-justify-content-around cam_button_row ion-padding">
+                    <ion-col v-if="hasFlash">
+                        <ion-button  @click="qrScanner?.toggleFlash" color="light">
+                            <ion-icon slot="icon-only" :icon="flashlightOutline"></ion-icon>
+                        </ion-button>
+                    </ion-col>
+                    <ion-col v-for="(cam, index) in cameras" >
+                        <ion-button @click="changeCam(cam.id)" color="medium">
+                            <ion-icon slot="start" :icon="cameraOutline"></ion-icon>
+                            #{{index+1}}
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-content>
+    </ion-modal>
+</ion-page>
 </template>
 
-<style scoped>
-#login-heading {
-    width: 100%;
+<style>
+#login_scan_icon {
+    display: inline;
 }
 
-#login-scan-video {
+#login_scan_video {
     width: 100%;
     max-width: 100%;
+}
+.cam_button_row ion-col {
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 </style>

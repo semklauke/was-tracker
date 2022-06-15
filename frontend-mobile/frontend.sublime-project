@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-			"folder_exclude_patterns": "/dist",
+			"folder_exclude_patterns": ["/dist", "dist"],
 		}
 	],
 	"settings": {
@@ -11,7 +11,8 @@
 
         "LSP": {
             "LSP-volar": {
-                "selector": "text.html.vue | source.ts | source.tsx | source.js | source.jsx"
+                "selector": "text.html.vue | source.ts | source.tsx | source.js | source.jsx",
+                "enabled": true
             },
             "LSP-typescript": {
                 "enabled": false

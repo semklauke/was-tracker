@@ -17,6 +17,7 @@ import {
     listOutline,
     //helpCircleOutline
 } from 'ionicons/icons';
+import { noneQrCodeOutline } from '@/includes/custom_svg'
 
 
 /* --- data --- */
@@ -46,8 +47,7 @@ import {
               </ion-tab-button>
 
               <ion-tab-button tab="lostqr" href="/app/lostqr">
-                <div id="WT_xout_qr_symbole"></div>
-                <ion-icon :icon="qrCodeOutline" />
+                <ion-icon :icon="noneQrCodeOutline" />
                 <ion-label>Kein QR</ion-label>
               </ion-tab-button>
 
@@ -60,6 +60,6 @@ import {
     </ion-content>
   </ion-page>
 </template>
-<style>
-    
+
+<style scoped>
 </style>
