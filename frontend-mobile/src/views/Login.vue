@@ -157,9 +157,15 @@ function dismissModal() {
     setTimeout(() => { router.back(); }, 200);
 }
 
-function changeCam(cam_id: QrScanner.DeviceId) {
-    qrScanner?.setCamera(cam_id)
+async function changeCam(cam_id: QrScanner.DeviceId) : Promise<void> {
+    showVideo.value= false;
+    await qrScanner?.setCamera(cam_id)
+    showVideo.value = true;
+    let cams = await QrScanner.listCameras();
+    cameras.value = cams;
+
 }
+
 </script>
 
 <template>
@@ -178,16 +184,14 @@ function changeCam(cam_id: QrScanner.DeviceId) {
           </ion-header>
         <ion-content fullscreen>
             <ion-grid>
-                <ion-row>
-                    <ion-col >
-                        <h1 class="ion-text-center">Scanne Stations QR-Code</h1>
+                <ion-row class="login_header_row">
+                    <ion-col>
+                        <h4 class="ion-text-center">Scanne Stations QR-Code</h4>
                     </ion-col>
                 </ion-row>
                 <ion-row>
                     <ion-col>
-                        <div class="ion-padding 
-                                    ion-justify-content-center 
-                                    ion-align-items-center" 
+                        <div class="ion-justify-content-center ion-align-items-center" 
                              id="login_scan_container"
                         >
                             <ion-icon :icon="camera" id="login_scan_icon" v-show="!showVideo" />
@@ -200,7 +204,7 @@ function changeCam(cam_id: QrScanner.DeviceId) {
                         </div>
                     </ion-col>
                 </ion-row>
-                <ion-row class="ion-justify-content-around cam_button_row ion-padding">
+                <ion-row class="ion-justify-content-around cam_button_row">
                     <ion-col v-if="hasFlash">
                         <ion-button  @click="qrScanner?.toggleFlash" color="light">
                             <ion-icon slot="icon-only" :icon="flashlightOutline"></ion-icon>
@@ -231,5 +235,23 @@ function changeCam(cam_id: QrScanner.DeviceId) {
 .cam_button_row ion-col {
     padding-top: 0px;
     padding-bottom: 0px;
+}
+
+.cam_button_row {
+    padding: 0px 10px;
+} 
+.cam_button_row ion-button,
+.cam_button_row button {
+    width: 100%;
+}
+
+#login_scan_container {
+    max-height: 70vh;
+    padding: 5px 16px 5px 16px;
+}
+
+.login_header_row h4 {
+    margin-top: 8px;
+    margin-bottom: 6px;
 }
 </style>
