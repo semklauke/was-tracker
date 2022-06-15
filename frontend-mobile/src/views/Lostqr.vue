@@ -1,4 +1,6 @@
-<template>  
+<template>
+    <span></span>
+    <div>hi</div>
 </template>
 
 <script>
@@ -10,6 +12,7 @@ export default {
     components: {
     },
     mounted() {
+        console.log("TETETETETETETETT")
     },
     methods: {   
     }

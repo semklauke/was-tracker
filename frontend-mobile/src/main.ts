@@ -10,8 +10,9 @@ import { IonicVue } from '@ionic/vue';
 // create vue app
 let app = createApp(App);
 const pinia = createPinia();
-app.use(pinia)
 app.use(IonicVue)
+app.use(pinia)
+
 
 import { useOfflineStore } from './stores/offlineStore'
 

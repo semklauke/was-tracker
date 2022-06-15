@@ -7,45 +7,57 @@ import Info from '@/views/Info.vue';
 import HistoryComponent from '@/views/History.vue';
 import Lostqr from '@/views/Lostqr.vue';
 import Help from '@/views/Help.vue';
-import Login from '@/views/Login.vue'
+import Login from '@/views/Login.vue';
+import Mobile from '@/views/Mobile.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        name: 'login',
-        component: Login,
+        redirect: '/app/login',
         meta: { nl: true }
     },
     {
-        path: '/scan',
-        name: 'tab-scan',
-        component: Scan,
-        meta: { l: true }
+        path: '/app/',
+        component: Mobile,
+        children: [
+            {
+                path: 'login',
+                name: 'mobile-login',
+                component: Login,
+                meta: { nl: true }
+            },
+            {
+                path: 'scan',
+                name: 'tab-scan',
+                component: Scan,
+                meta: { l: true }
+            },
+            {
+                path: 'info',
+                name: 'tab-info',
+                component: Info,
+                meta: { nl: true }
+            },
+            {
+                path: 'history',
+                name: 'tab-history',
+                component: HistoryComponent,
+                meta: { nl: true }
+            },
+            {
+                path: 'lostqr',
+                name: 'tab-lostqr',
+                component: Lostqr,
+                meta: { l: true }
+            },
+            {
+                path: 'help',
+                name: 'tab-help',
+                component: Help,
+                meta: { nl: true }
+            }
+        ]
     },
-    {
-        path: '/info',
-        name: 'tab-info',
-        component: Info,
-        meta: { nl: true }
-    },
-    {
-        path: '/history',
-        name: 'tab-history',
-        component: HistoryComponent,
-        meta: { nl: true }
-    },
-    {
-        path: '/lostqr',
-        name: 'tab-lostqr',
-        component: Lostqr,
-        meta: { l: true }
-    },
-    {
-        path: '/help',
-        name: 'tab-help',
-        component: Help,
-        meta: { nl: true }
-    }
 ]
 
 const router = createRouter({
@@ -54,10 +66,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if(to.matched.some(record => record.meta.l)) {
+    if(to.name !== "mobile-login" &&
+       to.matched.some(record => record.meta.l)) {
         if (localStorage.getItem('station_id') === null ||
             localStorage.getItem('station_id') === '') {
-            next(false);
+            next({ name: 'mobile-login' });
         } else {
             next();
         }
