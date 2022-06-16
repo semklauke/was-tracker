@@ -75,7 +75,7 @@ function onModalMounted() {
         await qrScanner?.start();
         hasFlash.value = await qrScanner.hasFlash();
         showVideo.value = true;
-    }).catch(err => {
+    }).catch(() => {
         showVideo.value = false;
         alert("Ihr Brwoser unterstützt keine Cameras bzw. hat nicht die Berechtigung diese zu nutzen");
     });
@@ -154,7 +154,10 @@ function handleOffline() : boolean {
 
 function dismissModal() {
     showModal.value = false;
-    setTimeout(() => { router.back(); }, 200);
+    setTimeout(() => { 
+        //router.back();
+        router.push('/')
+    }, 200);
 }
 
 async function changeCam(cam_id: QrScanner.DeviceId) : Promise<void> {

@@ -1,4 +1,4 @@
-export function isNull(obj: any) : obj is null {
+export function notNull(obj: any) : boolean {
     return (
         obj && 
         obj != null &&
@@ -7,4 +7,8 @@ export function isNull(obj: any) : obj is null {
         obj !== 'null' &&
         typeof obj != 'undefined'
     )
+}
+
+export function isNull(obj: any) : obj is null {
+    return !notNull(obj)
 }
