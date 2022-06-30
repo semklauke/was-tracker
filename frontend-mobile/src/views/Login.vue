@@ -226,7 +226,7 @@ async function changeCam(cam_id: QrScanner.DeviceId) : Promise<void> {
 </ion-page>
 </template>
 
-<style>
+<style scoped>
 #login_scan_icon {
     display: inline;
 }

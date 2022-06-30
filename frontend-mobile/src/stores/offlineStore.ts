@@ -13,12 +13,12 @@ export type OfflineStore = {
 }
 
 export const useOfflineStore = defineStore('offlineStore', {
-    state: () => ({
+    state: (): OfflineStore => ({
         station_name: null,
         station_uuid: null,
         scanner_uuid: null,
         offline_codes: []
-    }),
+    } as OfflineStore),
     actions: {
         
     }
