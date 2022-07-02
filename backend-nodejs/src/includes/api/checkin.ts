@@ -35,6 +35,14 @@ const sql_code: SQL = `
     SELECT rec_id FROM codes WHERE active = 1 AND uuid = ?;
 `;
 
+const sql_code_walker: SQL = `
+    SELECT 
+        class, lastname, firstname
+    FROM code_walker_full
+    WHERE code_id = ?
+    LIMIT 1;
+`;
+
 // init router
 export const router: express.Router = express.Router();
 
@@ -94,7 +102,15 @@ router.post('/', secure, bodyParser.json(), function(req, res) {
         station_id: parseInt(check_station),
         scanner_id
     });
-    res.status(200).json({ success: "Success" });
+
+    // get walker data to send back
+    let walker_code_ref = DB().queryFirstRow(sql_code_walker, parseInt(check_code));
+
+    // resolve request with checkind in walker data
+    res.status(200).json({ 
+        success: "Success",
+        walker: walker_code_ref
+    });
 
 });
 
