@@ -64,3 +64,10 @@ export async function was_confirm(
     if ( role == "ok" ) return true;
     else if ( role == "cancel" ) return false;
 }
+
+export enum Course {
+    DE = "DE", // Deutsch
+    MA = "MA", // Mathe
+    EN = "EN", // Englisch
+    PA = "PA" // Paedagogik
+}
