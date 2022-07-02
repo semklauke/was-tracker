@@ -63,6 +63,7 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 import './includes/variables.css'
+import './includes/ionic_darkmode.css'
 
 router.isReady().then(() => {
     app.mount('#app');
