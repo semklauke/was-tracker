@@ -1,126 +1,144 @@
-<template>
-    <div id="tab-history-container" class="container-xl">
-        <div class="row" id="history-upload-row">
-            <div class="col">
-                <button type="button"
-                        class="btn btn-light btn-block" 
-                        @click="uploadOffline" 
-                        id="history-upload-btn"
-                >
-                    Upload <img src="/assets/sync.svg" alt="upload"/>
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" 
-                        class="btn btn-light btn-block" 
-                        @click="clearOffline"
-                        id="history-clear-btn"
-                >
-                    Clear <img src="/assets/dismiss.svg" alt="dismiss"/>
-                </button>
-            </div>
-        </div>
-        <table class="table table-striped history-table"> 
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="code in codes">
-                <td>{{code.code_uuid.substring(0,10)}}</td>
-                <td>{{ Math.floor(code.stamp*1000).toString() }}</td>
-              </tr>
-            </tbody>
-        </table>
-    </div>
-</template>
+<script lang="ts" setup>
+import { ref, inject } from 'vue';
+import { onIonViewWillEnter, onIonViewWillLeave } from '@ionic/vue';
+import type { AxiosInstance } from 'axios';
+import { useOfflineStore } from '@/stores/offlineStore';
+import type { OfflineCode, Code } from '@/stores/offlineStore';
+// import components
+import {
+    IonPage,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonGrid,
+    IonCol,
+    IonRow,
+    IonIcon,
+    IonButton,
+    IonList,
+    IonItem,
+    IonItemSliding,
+    IonItemOption,
+    IonItemOptions,
+    IonLabel,
+    actionSheetController
+} from '@ionic/vue';
+// import icons
+import { 
+    cloudUploadOutline,
+    closeCircleOutline
+} from 'ionicons/icons';
 
-<script>
-// we removed mint-ui /*UPGRADE*/
-//import { MessageBox } from 'mint-ui'; 
-export default {
-    data: function () {
-        return {
-            codes: [],
-        };
-    },
-    components: {
-    },
-    mounted() {
-    },
-    methods: {
-        uploadOffline() {
-            this.$http.post("/api/checkin/offline/", { 
-                codes: this.codes, 
-                length: this.codes.length
-            }).then(res => {
-                if (res.status == 404) {
-                    /*UPGRADE*/   
-                    /*MessageBox.*/alert("Immernoch kein Verbindung :/", 'Fehler');         
-                } else if (res.status != 200) {
-                    /*MessageBox.*/alert("Server Fehler", 'Fehler');
-                } else {
-                    /*MessageBox.*/alert(
-                        res.data.count + "/" + this.codes.length +
-                        " checkins hochgeladen. Bei 100% specher bitte leeren",
-                        "Erfolg"
-                    );
-                }
-            }).catch(e => {
-                /*UPGRADE*/
-                /*MessageBox.*/alert(e.toString(), 'Fehler#');
-            });
-        },
-        clearOffline() {
-            for (c of this.codes) {
-                localStorage.removeItem(c.code_uuid);
-            }
-            /*UPGRADE*/
-            this.$localStorage.set('offline_codes', '');
-            this.codes = [];
-        }
-    },
-    beforeRouteLeave(to, from, next) {
-        this.codes = [];
-        next();
-    },
-    beforeRouteEnter(to, from, next) {
-        next(vm => {
-            /*UPGRADE*/
-            let keys = vm.$localStorage.get('offline_codes', '');
-            if (keys != '')
-            for (k of keys.split(';')) {
-                let d = localStorage.getItem(k);
-                if (d) {
-                    let dd = d.split(';');
-                    this.codes.push({ 
-                        code_uuid: k, 
-                        stamp: dd[0],
-                        station_uuid: dd[1]
+/* --- composable and inject --- */
+const $http: AxiosInstance = inject('$http') as AxiosInstance
+const offline_store = useOfflineStore();
+
+/* --- data --- */
+
+
+/* --- lifecycle hooks --- */
+onIonViewWillEnter(() => {
+    // offline_store.$patch(state => {
+    //     state.offline_codes.push({ uuid: "uuid1", timestamp: "01.01.2001", station_uuid: "suuid1" });
+    //     state.offline_codes.push({ uuid: "uuid2", timestamp: "02.02.2002", station_uuid: "suuid2" });
+    //     state.offline_codes.push({ uuid: "uuid3", timestamp: "03.03.2003", station_uuid: "suuid3" });
+    //     state.codes.push({ uuid: "uuid4", timestamp: "04.04.2004", station_uuid: "suuid4", firstname: "first4",lastname: "lastname4", class: "class4" });
+    //     state.codes.push({ uuid: "uuid5", timestamp: "05.05.2005", station_uuid: "suuid5", firstname: "first5",lastname: "lastname5", class: "class5" });
+    // })
+})
+
+onIonViewWillLeave(() => {
+
+})
+
+/* --- methods --- */
+function isCode(c: Code | OfflineCode) : c is Code {
+    return Object.keys(c).includes("firstname") && Object.keys(c).includes("lastname")
+} 
+
+async function clearHistoryButton() {
+    const actionSheet = await actionSheetController.create({
+        header: 'Löschen',
+        cssClass: 'clear_action_sheet',
+        buttons: [
+            {
+                text: 'Offline Scans löschen',
+                role: 'offline',
+                handler: () => {
+                    offline_store.$patch(state => {
+                        state.offline_codes = [];
                     });
                 }
-            }
-        });
+            },
+            {
+                text: 'Gesicherte Scans löschen',
+                role: 'online',
+                handler: () => {
+                    offline_store.$patch(state => {
+                        state.codes = [];
+                    });
+                }
+            },
+            {
+                text: 'Alle löschen',
+                role: 'destructive',
+                handler: () => {
+                    offline_store.$patch(state => {
+                        state.offline_codes = [];
+                        state.codes = [];
+                    });
+                }
+            },
+            {
+                text: 'Cancel',
+                role: 'cancel',
+            },
+        ],
+    });
+    await actionSheet.present();
+    const { role } = await actionSheet.onDidDismiss();
+    if (role != "cancle") {
+        // we did performe a clear, update user interface here
+        // TODO
+    }
 }
-};
 </script>
-
-<style>
-#tab-history-container {
-    overflow: scroll;
-    max-height: calc(100vh - 200px);
-}
-.history-table {
-    overflow-y: scroll;
-    
-}
-#history-upload-row {
-    margin-bottom: 15px;
-}
-#history-upload-row img {
-    width: 1.2em;
-    height: 1.2em;
-}
+<template>
+    <ion-page>
+        <ion-header translucent>
+            <ion-toolbar>
+              <ion-title>History</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content fullscreen scroll-x="false">
+            <ion-grid>
+                <ion-row id="button_row">
+                    <ion-col>
+                        <ion-button color="light">
+                            <ion-icon slot="start" :icon="cloudUploadOutline"></ion-icon>
+                            Upload 
+                        </ion-button>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button color="light" @click="clearHistoryButton">
+                            <ion-icon slot="start" :icon="closeCircleOutline"></ion-icon>
+                            Löschen  
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+                <ion-row id="history_row">
+                    <ion-list>
+                        <ion-item-sliding v-for="code in offline_store.allCodes">
+                            <ion-item>
+                                <ion-label>ksdjfksdjfkdjsfkdjs</ion-label>
+                            </ion-item>
+                        </ion-item-sliding>
+                    </ion-list>
+                </ion-row>
+            </ion-grid>
+        </ion-content>
+    </ion-page>    
+</template>
+<style scoped>
 </style>
