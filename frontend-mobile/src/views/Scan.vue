@@ -5,18 +5,21 @@ import { onIonViewWillEnter, onIonViewWillLeave } from '@ionic/vue';
 import QrScanner from 'qr-scanner';
 import type { AxiosInstance } from 'axios';
 import { useOfflineStore } from '@/stores/offlineStore';
-import type { ScanCode } from '@/stores/offlineStore';
+import type { OfflineCode } from '@/stores/offlineStore';
 import { dateToSqliteTimestamp, was_alert } from '@/includes/helper';
 // import components
 import {
     IonPage,
     IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
     IonGrid,
     IonCol,
     IonRow,
     IonButton,
     IonIcon,
-    IonText
+    IonText,
 } from '@ionic/vue';
 // import icons
 import { 
@@ -55,7 +58,6 @@ onMounted(() => {
 
 onIonViewWillEnter(async () => {
     startCam();
-    displayInfotext("✓ QR-Code gesendet!", "success")
 })
 
 onIonViewWillLeave(() => {
@@ -125,7 +127,7 @@ async function scannedCode(result: QrScanner.ScanResult) {
 async function saveCodeOffline(uuid: string) {
     let timestamp = dateToSqliteTimestamp(new Date());
     let station_uuid = offline_store.station_uuid || "error"
-    let newCode: ScanCode = {
+    let newCode: OfflineCode = {
         uuid,
         timestamp,
         station_uuid
@@ -196,13 +198,18 @@ async function displayInfotext(text: string, color = "") {
 
 <template>
     <ion-page>
-        <ion-content fullscreen scroll-y="false">
+        <ion-header translucent>
+            <ion-toolbar>
+              <ion-title>QR-Code Scannen</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content scroll-y="false">
             <ion-grid>
-                <ion-row class="scan_header_row">
+                <!--ion-row class="scan_header_row">
                     <ion-col>
-                        <h4 class="ion-text-center">QR-Code Scannen</h4>
+                        <h4 class="">QR-Code Scannen</h4>
                     </ion-col>
-                </ion-row>
+                </ion-row-->
                 <ion-row class="scan_header_row">
                     <ion-col>
                         <ion-button expand="block" color="primary" @click="toggleCam" ref="toggleCamButton" id="toggleCamButton">
@@ -228,25 +235,25 @@ async function displayInfotext(text: string, color = "") {
                 </ion-row>
                 <ion-row class="ion-justify-content-around cam_button_row">
                     <ion-col v-if="hasFlash">
-                        <ion-button  @click="qrScanner?.toggleFlash" color="light">
+                        <ion-button  @click="qrScanner?.toggleFlash" color="light" size="small">
                             <ion-icon slot="icon-only" :icon="flashlightOutline"></ion-icon>
                         </ion-button>
                     </ion-col>
                     <ion-col v-for="(cam, index) in cameras" >
-                        <ion-button @click="changeCam(cam.id)" color="medium">
+                        <ion-button @click="changeCam(cam.id)" color="medium" size="small">
                             <ion-icon slot="start" :icon="cameraOutline"></ion-icon>
                             #{{index+1}}
                         </ion-button>
                     </ion-col>
                 </ion-row>
-                <ion-row class="ion-justify-content-center ion-text-center infotext">
-                    <ion-col>
-                        <Transition name="fade">
-                        <ion-text :color="infotext_color" v-show="showInfotext">
+                <ion-row class="infotext">
+                    <Transition name="fade">
+                    <div id="infotext_background" v-show="showInfotext">
+                        <ion-text :color="infotext_color"  >
                             {{ infotext }}
                         </ion-text>
-                        </Transition>
-                    </ion-col>
+                    </div>
+                    </Transition>
                 </ion-row>
             </ion-grid>
         </ion-content>
@@ -258,46 +265,74 @@ async function displayInfotext(text: string, color = "") {
     display: inline;
 }
 #scan_container {
-    max-height: 40vh;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 #scan_video {
     width: 100%;
     max-width: 100%;
+    max-height: 55vh;
 }
 
 .scan_header_row h4 {
-    margin-top: 8px;
-    margin-bottom: 6px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 5px;
 }
 .cam_button_row ion-col {
     padding-top: 0px;
     padding-bottom: 0px;
 }
-
 .cam_button_row {
     padding: 2px 0px;
 } 
 .cam_button_row ion-button,
 .cam_button_row button {
     width: 100%;
+    margin: 0px;
 }
+
 #toggleCamButton {
-    /*width: calc(100% - 32px);
-    margin: 5px 16px 5px 16px;*/
-    width: 100%;
+    margin: 0px;
 }
+
 .infotext {
-    font-size: 1.2em;
-    padding: 10px 0px;
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 0px 0px;
+    position: absolute;
+    top: 120px;
+    width: 100%;
+    margin: 0px -5px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
 }
+
+
+.infotext #infotext_background {
+    --pad: 25px;
+    background-color: rgba(0,0,0,0.73);
+    /*width: calc(100% - 2*var(--pad));*/
+    border-radius: 14px;
+    padding: 0px var(--pad);
+    margin: 0px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.dark .infotext #infotext_background {
+    background-color: rgba(255,255,255,0.73);
+}
+
 .invisible {
     visibility: hidden;
 }
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 1s ease;
+    transition: opacity 0.7s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
