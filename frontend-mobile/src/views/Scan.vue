@@ -20,6 +20,7 @@ import {
     IonButton,
     IonIcon,
     IonText,
+    IonLoading
 } from '@ionic/vue';
 // import icons
 import { 
@@ -44,6 +45,7 @@ let cameras = ref<QrScanner.Camera[]>([])
 let infotext_color = ref("success")
 let toggleCamButton = ref() as Ref<ComponentPublicInstance<typeof IonButton>>
 let infotext = ref("")
+let added_walker = ref("Sem Klauke, Q2")
 let infotext_timer: Timer | undefined;
 
 /* --- lifecycle hooks --- */
@@ -58,6 +60,7 @@ onMounted(() => {
 
 onIonViewWillEnter(async () => {
     startCam();
+    displayInfotext("✓ QR-Code gesendet!", "success")
 })
 
 onIonViewWillLeave(() => {
@@ -108,6 +111,21 @@ async function scannedCode(result: QrScanner.ScanResult) {
             displayInfotext("✗ Nicht gespeichert", "danger")
         } else if (res?.data?.success) {
             // request success
+            // if got an walker object back, save and display it
+            if (res?.data?.walker) {
+                offline_store.codes.push({
+                    uuid: qrData[1],
+                    timestamp: dateToSqliteTimestamp(new Date()),
+                    station_uuid: offline_store.station_uuid || "error",
+                    firstname: res?.data?.walker?.firstname || "error",
+                    lastname: res?.data?.walker?.lastname || "error",
+                    class: res?.data?.walker?.class || "error"
+                })
+                added_walker.value = 
+                    `${res?.data?.walker?.firstname} ${res?.data?.walker?.lastname}, ${res?.data?.walker?.class}`;
+            } else {
+                added_walker.value = "";
+            }
             displayInfotext("✓ QR-Code gesendet!", "success")
         }
     } } catch (err: any) {
@@ -185,12 +203,14 @@ async function changeCam(cam_id: QrScanner.DeviceId) : Promise<void> {
 }
 
 async function displayInfotext(text: string, color = "") {
+    loading.value = false;
     showInfotext.value = true;
     infotext.value = text;
     infotext_color.value = color;
     clearTimeout(infotext_timer);
     infotext_timer = setTimeout(() => {
         showInfotext.value = false;
+        added_walker.value = "";
     }, 3000)
 }
 
@@ -250,12 +270,23 @@ async function displayInfotext(text: string, color = "") {
                     <Transition name="fade">
                     <div id="infotext_background" v-show="showInfotext">
                         <ion-text :color="infotext_color"  >
-                            {{ infotext }}
+                            <div id="infotext_walker" v-if="added_walker != ''">
+                                {{ added_walker }}
+                            </div>
+                            <span id="infotext_info">
+                                {{ infotext }}
+                            </span>
                         </ion-text>
                     </div>
                     </Transition>
                 </ion-row>
             </ion-grid>
+            <ion-loading
+                :is-open="loading"
+                cssClass="scan_loading"
+                message="Sende an server..."
+            >
+            </ion-loading>
         </ion-content>
     </ion-page>
 </template>
@@ -297,8 +328,6 @@ async function displayInfotext(text: string, color = "") {
 }
 
 .infotext {
-    font-size: 1.3em;
-    font-weight: bold;
     padding: 0px 0px;
     position: absolute;
     top: 120px;
@@ -311,20 +340,32 @@ async function displayInfotext(text: string, color = "") {
 
 
 .infotext #infotext_background {
-    --pad: 25px;
-    background-color: rgba(0,0,0,0.73);
+    --pad: 30px;
+    background-color: rgba(0,0,0,0.85);
     /*width: calc(100% - 2*var(--pad));*/
     border-radius: 14px;
-    padding: 0px var(--pad);
+    padding: 15px var(--pad) 15px var(--pad);
     margin: 0px;
     min-height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 1.0);
 }
 
 body.dark .infotext #infotext_background {
-    background-color: rgba(255,255,255,0.73);
+    background-color: rgba(0,0,0,0.90);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+#infotext_walker {
+    font-size: 1.6em;
+    margin-bottom: 12px;
+}
+
+#infotext_info {
+    font-weight: bold;
+    font-size: 1.1em;
 }
 
 .invisible {
