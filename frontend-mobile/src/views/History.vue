@@ -23,10 +23,11 @@ import {
     IonItemOption,
     IonItemOptions,
     IonLabel,
-    actionSheetController,
     IonListHeader,
     IonPopover,
-    toastController
+    IonLoading,
+    actionSheetController,
+    toastController,
 } from '@ionic/vue';
 // import icons
 import { 
@@ -57,21 +58,12 @@ onIonViewWillEnter(() => {
         header?.value?.$el.removeAttribute("translucent")
         header?.value?.$el.setAttribute("collapse", "fade")
     }
-    console.log("History will enter")
 })
 
 onIonViewDidEnter(() => {
-    offline_store.$patch(state => {
-        state.offline_codes.push({ uuid: "uuid1", timestamp: "01.01.2001", station_uuid: "suuid1" });
-        state.offline_codes.push({ uuid: "uuid2", timestamp: "02.02.2002", station_uuid: "suuid2" });
-        state.offline_codes.push({ uuid: "uuid3", timestamp: "03.03.2003", station_uuid: "suuid3" });
-        state.codes.push({ uuid: "uuid4", timestamp: "04.04.2004", station_uuid: "suuid4", firstname: "first4",lastname: "lastname4", class: "class4" });
-        state.codes.push({ uuid: "uuid5", timestamp: "05.05.2005", station_uuid: "suuid5", firstname: "first5",lastname: "lastname5", class: "class5" });
-    })
 });
 
 onIonViewWillLeave(() => {
-
 })
 
 /* --- methods --- */
@@ -127,6 +119,70 @@ function delete_code(code: Code | OfflineCode) : void {
     offline_store.delete_code(code);
 }
 
+async function upload_all_codes() {
+    loading.value = true;
+
+    try {
+    if (!navigator.onLine) {
+        was_alert("Keine Internet Verbindung", "Info")
+        loading.value = false;
+    } else {
+        let res = await $http.post(`/api/checkin/offline`, {
+            codes: offline_store.offline_codes,
+            station_uuid: offline_store.station_uuid ?? undefined
+        });
+        let num_uploaded = offline_store.offline_codes.length;
+
+        loading.value = false;
+
+        if (res.status == 400 && 
+            res?.data?.errorid && 
+            res?.data?.errorid == 2548) {
+            // handle error
+            console.error(res?.data?.error)
+            was_alert("Keine Codes hochgeladen. Fehler 2548.", "Fehler")
+        } else if (res?.data?.success) {
+            // request success
+            // if got an walker object back, add it to online 
+            if (res?.data?.walkers) {
+                offline_store.$patch((state) => {
+                    for (let w of res.data.walkers) {
+                        let code = offline_store.getCodeForUuid(w.uuid)! as OfflineCode;
+                        state.codes.push({
+                            uuid: w.uuid,
+                            timestamp: code.timestamp,
+                            station_uuid: code.station_uuid,
+                            firstname: w.firstname || "Firstname missing",
+                            lastname: w.lastname || "Lastname missing",
+                            class: w.class || "Class missing"
+                        })
+                        offline_store.delete_offlineCode(code)
+                    }
+                })
+            } 
+            const toast = await toastController.create({
+                message: `${res?.data?.success}/${num_uploaded} Codes hochgeladen!`,
+                duration: 3000,
+                color: "success",
+                icon: checkmarkOutline
+            })
+            toast.present();
+        } else if (res.status >= 400) {
+            was_alert("Server konnte nicht erreicht werden. An Admin melden", "Fehler")
+        }
+    } } catch (err: any) {
+        if (!navigator.onLine && err?.code === "ERR_NETWORK") {
+            was_alert("Keine Internet Verbindung", "Info")
+        } else {
+            if (!err) err = new Error("API request error")
+            console.error(err)
+            was_alert("Server konnte nicht erreicht werden. An Admin melden", "Fehler")
+        }
+    } finally {
+        loading.value = false;
+    }
+}
+
 async function upload_code(code: OfflineCode) {
     list.value.$el.closeSlidingItems();
     loading.value = true;
@@ -134,9 +190,12 @@ async function upload_code(code: OfflineCode) {
     try {
     if (!navigator.onLine) {
         loading.value = false;
+        was_alert("Keine Internet Verbindung", "Info")
     } else {
-
-        let res = await $http.post(`/api/checkin/station/${code.station_uuid}`, );
+        let res = await $http.post(`/api/checkin/station/${code.station_uuid}`, {
+            code_uuid: code.uuid,
+            timestamp: code.timestamp  
+        });
         loading.value = false;
 
         if (res.status != 200 && 
@@ -167,7 +226,7 @@ async function upload_code(code: OfflineCode) {
                     lastname: res?.data?.walker?.lastname || "Lastname missing",
                     class: res?.data?.walker?.class || "Class missing"
                 })
-                offline_store.delete_offlineCode(code);
+                await offline_store.delete_offlineCode(code);
             } 
             const toast = await toastController.create({
                 message: 'Scan wurde hochgeladen!',
@@ -279,6 +338,12 @@ async function upload_code(code: OfflineCode) {
                     - Swipe einen offline Eintrag nach links um nur diesen Hochzuladen<br />
                 </ion-content>
             </ion-popover>
+            <ion-loading
+                :is-open="loading"
+                cssClass="scan_loading"
+                message="Sende an server..."
+            >
+            </ion-loading>
         </ion-content>
     </ion-page>    
 </template>

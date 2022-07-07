@@ -30,13 +30,13 @@ export const useOfflineStore = defineStore('offlineStore', {
         codes: []
     } as OfflineStore),
     actions: {
-        delete_code(c: Code | OfflineCode) {
+        async delete_code(c: Code | OfflineCode) {
             if (isCode(c))
                 return this.delete_onlineCode(c);
             else
                 return this.delete_offlineCode(c);
         },
-        delete_offlineCode(c: OfflineCode) : boolean {
+        async delete_offlineCode(c: OfflineCode) : Promise<boolean> {
             for (let i = 0; i<this.offline_codes.length; i++) {
                 if (this.offline_codes[i].uuid == c.uuid) {
                     this.offline_codes.splice(i, 1)
@@ -45,14 +45,14 @@ export const useOfflineStore = defineStore('offlineStore', {
             }
             return false;
         },
-        delete_onlineCode(c: Code) : boolean {
+        async delete_onlineCode(c: Code) : Promise<boolean> {
             for (let i = 0; i<this.codes.length; i++) {
                 if (this.codes[i].uuid == c.uuid) {
                     this.codes.splice(i, 1)
                     return true;
                 }
             }
-            return false
+            return false;
         }
     },
     getters: {
@@ -61,6 +61,19 @@ export const useOfflineStore = defineStore('offlineStore', {
                 return new Date(a.timestamp).getTime() - 
                        new Date(b.timestamp).getTime();
             })    
+        },
+        getCodeForUuid: (state) : ((id: string) => (Code | OfflineCode | null)) => {
+            return (id: string) : (Code | OfflineCode | null) => {
+                for (let c of state.codes) {
+                    if (c.uuid == id)
+                        return c;
+                }
+                for (let c of state.offline_codes) {
+                    if (c.uuid == id)
+                        return c;
+                }
+                return null;
+            }
         }
     }
 });

@@ -30,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'scan',
                 name: 'tab-scan',
                 component: Scan,
-                meta: { l: true }
+                meta: { nl: true }
             },
             {
                 path: 'info',
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'lostqr',
                 name: 'tab-lostqr',
                 component: Lostqr,
-                meta: { l: true }
+                meta: { nl: true }
             },
             {
                 path: 'help',

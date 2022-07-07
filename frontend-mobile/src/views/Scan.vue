@@ -88,7 +88,7 @@ async function scannedCode(result: QrScanner.ScanResult) {
         await saveCodeOffline(qrData[1])
     } else {
         let station = offline_store.station_uuid || "error"
-        let res = await $http.post(`/api/checkin/station/${station}`, );
+        let res = await $http.post(`/api/checkin/station/${station}`, { code_uuid: qrData[1] });
         loading.value = false;
 
         if (res.status != 200 && 
