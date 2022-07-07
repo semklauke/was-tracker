@@ -9,7 +9,7 @@ import { BetterSqlite3Helper } from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
 import { logger } from './../logger';
 import { SQL } from './../../types/';
-import { Station, Checkin } from './../../types/tracker';
+import { Station, Checkin, SendWalker } from './../../types/tracker';
 import { secure } from './../scanner_authentication';
 
 // sql querys
@@ -37,7 +37,7 @@ const sql_code: SQL = `
 
 const sql_code_walker: SQL = `
     SELECT 
-        class, lastname, firstname
+        class, lastname, firstname, code_uuid AS uuid
     FROM code_walker_full
     WHERE code_id = ?
     LIMIT 1;
@@ -104,7 +104,7 @@ router.post('/', secure, bodyParser.json(), function(req, res) {
     });
 
     // get walker data to send back
-    let walker_code_ref = DB().queryFirstRow(sql_code_walker, parseInt(check_code));
+    let walker_code_ref = DB().queryFirstRow(sql_code_walker, parseInt(check_code)) as SendWalker;
 
     // resolve request with checkind in walker data
     res.status(200).json({ 
@@ -196,6 +196,7 @@ router.post('/offline', secure, bodyParser.json(), function(req, res) {
     // scanner uuid from auth with cookie
     let scanner_id: number = parseInt(res.locals.scanner_id);
     let success: number = 0;
+    let walkers: SendWalker[] = [];
 
     for (let c of req.body.codes) {
         // check if station uuid exists
@@ -215,6 +216,10 @@ router.post('/offline', secure, bodyParser.json(), function(req, res) {
             continue;
         }
 
+        walkers.push(
+            DB().queryFirstRow(sql_code_walker, parseInt(check_code)) as SendWalker
+        );
+
         // all good insert checkin
         DB().insert('checkins', {
             code_id: parseInt(check_code),
@@ -223,6 +228,10 @@ router.post('/offline', secure, bodyParser.json(), function(req, res) {
         });
         success++;
     }
-    res.status(200).json({ success: "Success", count: success });
+    res.status(200).json({ 
+        success: "Success", 
+        count: success,
+        walkers: walkers,
+    });
 
 });

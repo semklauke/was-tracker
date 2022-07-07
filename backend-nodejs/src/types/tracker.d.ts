@@ -27,3 +27,10 @@ export interface Checkin {
     scanner_id: number,
     stamp: string
 }
+
+export interface SendWalker {
+    firstname: string;
+    lastname: string;
+    class: string;
+    uuid: string;
+}
