@@ -72,7 +72,6 @@ onIonViewWillLeave(() => {
 
 async function scannedCode(result: QrScanner.ScanResult) {
     qrScanner?.pause();
-    // todo: add waiting animation here
     loading.value = true;
 
     // parse qr
@@ -117,9 +116,9 @@ async function scannedCode(result: QrScanner.ScanResult) {
                     uuid: qrData[1],
                     timestamp: dateToSqliteTimestamp(new Date()),
                     station_uuid: offline_store.station_uuid || "error",
-                    firstname: res?.data?.walker?.firstname || "error",
-                    lastname: res?.data?.walker?.lastname || "error",
-                    class: res?.data?.walker?.class || "error"
+                    firstname: res?.data?.walker?.firstname || "Firstname missing",
+                    lastname: res?.data?.walker?.lastname || "Lastname missing",
+                    class: res?.data?.walker?.class || "Class missing"
                 })
                 added_walker.value = 
                     `${res?.data?.walker?.firstname} ${res?.data?.walker?.lastname}, ${res?.data?.walker?.class}`;

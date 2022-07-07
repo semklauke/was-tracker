@@ -1,4 +1,5 @@
 import { alertController } from '@ionic/vue';
+import type { Code, OfflineCode } from '@/stores/offlineStore'
 
 export function notNull(obj: any) : boolean {
     return (
@@ -14,6 +15,11 @@ export function notNull(obj: any) : boolean {
 export function isNull(obj: any) : obj is null {
     return !notNull(obj)
 }
+
+export function isCode(c: Code | OfflineCode) : c is Code {
+    const keys = Object.keys(c);
+    return keys.includes("firstname") && keys.includes("lastname")
+} 
 
 export function dateToSqliteTimestamp(date: Date) : string {
     // TODO

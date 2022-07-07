@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { isCode } from '@/includes/helper';
 
 export interface OfflineCode {
     uuid: string;
@@ -29,7 +30,30 @@ export const useOfflineStore = defineStore('offlineStore', {
         codes: []
     } as OfflineStore),
     actions: {
-        
+        delete_code(c: Code | OfflineCode) {
+            if (isCode(c))
+                return this.delete_onlineCode(c);
+            else
+                return this.delete_offlineCode(c);
+        },
+        delete_offlineCode(c: OfflineCode) : boolean {
+            for (let i = 0; i<this.offline_codes.length; i++) {
+                if (this.offline_codes[i].uuid == c.uuid) {
+                    this.offline_codes.splice(i, 1)
+                    return true;
+                }
+            }
+            return false;
+        },
+        delete_onlineCode(c: Code) : boolean {
+            for (let i = 0; i<this.codes.length; i++) {
+                if (this.codes[i].uuid == c.uuid) {
+                    this.codes.splice(i, 1)
+                    return true;
+                }
+            }
+            return false
+        }
     },
     getters: {
         allCodes: (state) : (Code | OfflineCode)[] => {
