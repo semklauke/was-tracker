@@ -16,7 +16,7 @@ SELECT
 FROM code_walker AS cw
 LEFT JOIN codes AS co ON cw.code_id = co.rec_id 
 LEFT JOIN walkers AS wa ON cw.walker_id = wa.rec_id 
-WHERE active = 1;
+WHERE active = 1 OR active = 2;
 
 
 

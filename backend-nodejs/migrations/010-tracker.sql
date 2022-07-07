@@ -15,7 +15,7 @@ CREATE TABLE codes (
     rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     uuid VARCHAR NOT NULL,
     active INTEGER NOT NULL DEFAULT 1,
-    CHECK (active IN (0,1)),
+    CHECK (active IN (0,1,2)),
     UNIQUE (uuid)
 );
 

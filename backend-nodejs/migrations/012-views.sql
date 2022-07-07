@@ -7,6 +7,7 @@ SELECT
     ch.station_id AS `station_id`,
     ch.scanner_id AS `scanner_id`,
     ch.stamp AS `stamp`,
+    ch.active AS `active`,
     co.uuid AS `code_uuid`,
     sc.uuid AS `scanner_uuid`,
     st.name AS `station_name`,
@@ -25,6 +26,7 @@ SELECT
     ch.station_id AS `station_id`,
     ch.scanner_id AS `scanner_id`,
     ch.stamp AS `stamp`,
+    ch.active AS `active`,
     st.name AS `name`,
     st.uuid AS `uuid`,
     st.prev_station AS `prev_station`,
@@ -42,6 +44,7 @@ SELECT
     ch.station_id AS `station_id`,
     ch.scanner_id AS `scanner_id`,
     ch.stamp AS `stamp`,
+    ch.active AS `active`,
     sc.uuid AS `uuid`,
     sc.stamp AS `scanner_stamp`,
     sc.name AS `name`
@@ -56,6 +59,7 @@ SELECT
     ch.code_id AS `code_id`,
     ch.station_id AS `station_id`,
     ch.scanner_id AS `scanner_id`,
+    ch.active AS `active`,
     ch.stamp AS `stamp`,
     co.uuid AS `uuid`,
     co.active AS `active` 
