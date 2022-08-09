@@ -59,8 +59,7 @@ onMounted(() => {
 })
 
 onIonViewWillEnter(async () => {
-    startCam();
-    displayInfotext("✓ QR-Code gesendet!", "success")
+    // pass
 })
 
 onIonViewWillLeave(() => {
@@ -71,14 +70,15 @@ onIonViewWillLeave(() => {
 /* --- methods --- */
 
 async function scannedCode(result: QrScanner.ScanResult) {
-    qrScanner?.pause();
+    stopCam();
     loading.value = true;
 
     // parse qr
     let qrData = result.data.split(";");
     if (qrData.length != 2 || qrData[0].toLowerCase() != 'walker') {
-        was_alert("QR Code enthält feherlhafte Informationen", "Info");
-        qrScanner?.start();
+        loading.value = false;
+        await was_alert("QR Code enthält feherlhafte Informationen", "Info");
+        startCam();
         return;
     }
 
@@ -136,7 +136,9 @@ async function scannedCode(result: QrScanner.ScanResult) {
         }
         displayInfotext("✗ Nicht gespeichert", "danger")
     } finally {
-        qrScanner?.start();
+        setTimeout(() => {
+            startCam();
+        }, 2100)
         loading.value = false;
     }
 }

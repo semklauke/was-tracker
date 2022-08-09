@@ -132,6 +132,7 @@ function loginWithCode(result: QrScanner.ScanResult) : void {
             qrScanner?.destroy();
             qrScanner = null;
             // naviatge away from login
+            showModal.value = false;
             router.push({ name: 'tab-scan' });
         }
     }).catch((err: AxiosError) => {
@@ -209,12 +210,12 @@ async function changeCam(cam_id: QrScanner.DeviceId) : Promise<void> {
                 </ion-row>
                 <ion-row class="ion-justify-content-around cam_button_row">
                     <ion-col v-if="hasFlash">
-                        <ion-button  @click="qrScanner?.toggleFlash" color="light">
+                        <ion-button  @click="qrScanner?.toggleFlash" color="light" size="small">
                             <ion-icon slot="icon-only" :icon="flashlightOutline"></ion-icon>
                         </ion-button>
                     </ion-col>
                     <ion-col v-for="(cam, index) in cameras" >
-                        <ion-button @click="changeCam(cam.id)" color="medium">
+                        <ion-button @click="changeCam(cam.id)" color="medium" size="small">
                             <ion-icon slot="start" :icon="cameraOutline"></ion-icon>
                             #{{index+1}}
                         </ion-button>

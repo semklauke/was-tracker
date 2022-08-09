@@ -38,10 +38,10 @@ let router = useRouter();
 /* --- lifecylce hooks --- */
 // DEBUG
 onMounted(() => {
-    offline_store.$patch((state: OfflineStore) => {
-        state.station_name = "Station 1";
-        state.station_uuid = "1";
-    })
+    // offline_store.$patch((state: OfflineStore) => {
+    //     state.station_name = "Station 1";
+    //     state.station_uuid = "1";
+    // })
 })
 
 /* --- frontend methods --- */
