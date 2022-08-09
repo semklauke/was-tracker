@@ -16,6 +16,9 @@ export default defineConfig({
         alias: {
             "@": path.resolve(__dirname, "src"),
         },
-   },
-   server: { https: true }
+    },
+    server: { https: true },
+    build: {
+        chunkSizeWarningLimit: 1000
+    }
 })

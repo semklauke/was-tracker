@@ -37,7 +37,9 @@ export async function was_alert(
         message,
         buttons: [btn],
     })
-    return await al.present();
+    await al.present();
+    await al.onDidDismiss();
+    return;
 }
 
 export async function was_confirm(
