@@ -25,7 +25,7 @@ export interface Checkin {
     code_id: number,
     station_id: number,
     scanner_id: number,
-    stamp: string
+    stamp?: string
 }
 
 export interface SendWalker {

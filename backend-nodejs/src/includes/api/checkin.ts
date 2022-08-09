@@ -98,14 +98,14 @@ router.post('/', secure, bodyParser.json(), function(req, res) {
     }
 
     // all good insert checkin
-    let insert_data = {
+    let insert_data: Checkin = {
         code_id: parseInt(check_code),
         station_id: parseInt(check_station),
         scanner_id
     }
 
     if (req.body?.timestamp)
-        insert_data["stamp"] = c.timestamp
+        insert_data.stamp = req.body.timestamp
 
     DB().insert('checkins', insert_data);
 
@@ -169,16 +169,18 @@ router.post('/station/:station_uuid', secure, bodyParser.json(), function(req, r
     let walker_code_ref = DB().queryFirstRow(sql_code_walker, parseInt(check_code)) as SendWalker;
 
     // all good insert checkin
-    let insert_data = {
+    let insert_data: Checkin = {
         code_id: parseInt(check_code),
         station_id: parseInt(check_station),
         scanner_id
     }
 
     if (req.body?.timestamp)
-        insert_data["stamp"] = c.timestamp
+        insert_data.stamp = req.body.timestamp
 
     DB().insert('checkins', insert_data);
+
+    logger.debug("POST api.tracker.checkin.station / SUCCESS checkin %s", code_uuid)
 
     res.status(200).json({ 
         success: "Success",
@@ -239,14 +241,14 @@ router.post('/offline', secure, bodyParser.json(), function(req, res) {
             DB().queryFirstRow(sql_code_walker, parseInt(check_code)) as SendWalker
         );
 
-        let insert_data = {
+        let insert_data: Checkin = {
             code_id: parseInt(check_code),
             station_id: parseInt(check_station),
             scanner_id
         }
 
         if (c?.timestamp)
-            insert_data["stamp"] = c.timestamp
+            insert_data.stamp = c.timestamp
 
         DB().insert('checkins', insert_data);
 
@@ -305,14 +307,14 @@ router.post('/temp', secure, bodyParser.json(), function(req, res) {
     DB().insert('walkers', req.body.walker);
 
     // all good insert checkin
-    let insert_data = {
-        code_id: parseInt(code_id),
+    let insert_data: Checkin = {
+        code_id: code_id,
         station_id: parseInt(check_station),
         scanner_id
     }
 
     if (req.body.timestamp)
-        insert_data["stamp"] = c.timestamp
+        insert_data.stamp = req.body.timestamp
 
     DB().insert('checkins', insert_data);
 

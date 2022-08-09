@@ -8,7 +8,7 @@ export default {
     "log_folder" : "log",
 
     // is the appliaction in debbuging mode (true/false)
-    "debug" : false,
+    "debug" : true,
 
     // start http server
     "http" : true,
