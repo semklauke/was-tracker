@@ -30,7 +30,7 @@
     "cordova-res": "^0.15.4",
     "native-run": "^1.6.0",
     "typescript": "4",
-    "vite": "^2.9.10",
+    "vite": "^2.9.13",
     "vite-plugin-mkcert": "^1.7.1",
     "vite-plugin-vue2": "2.0.1",
     "vue-tsc": "^0.37.3"
